@@ -619,7 +619,7 @@ function saveState() {
 
 function activateKing() {
   const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key || !key.startsWith('sk-ant')) {
+ if (!key || key.length < 20) {
     showNotif('❌ Noto\'g\'ri API kalit!');
     return;
   }
