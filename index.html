@@ -3,641 +3,839 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QIROL — Teamly Uslubidagi AI Imperiya</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>QIROLLIK</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-:root {
-    --gold: #c9a84c;
-    --gold-glow: rgba(201, 168, 76, 0.2);
-    --dark-deep: #06060a;
-    --dark-card: #0d0d15;
-    --dark-bg: #11111e;
-    --dark-border: rgba(201, 168, 76, 0.15);
-    --txt-main: #f0eadc;
-    --txt-muted: #8e8a9f;
-    --sidebar-w: 260px;
-    
-    /* Agent Maxsus Ranglari */
-    --clr-excel: #107c41;
-    --clr-sport: #e05050;
-    --clr-sap: #008fd3;
-    --clr-custom: #9060d0;
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#c9a84c;--gold2:#e8c97a;
+  --dark:#07070d;--dark2:#0e0e18;--dark3:#161624;--dark4:#1e1e30;
+  --txt:#ede8df;--txt2:#9a9080;--txt3:#5a5040;
+  --green:#4ecb71;--red:#e05555;
 }
+html,body{height:100%;background:var(--dark);color:var(--txt);font-family:'Crimson Pro',serif;overflow:hidden}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    background-color: var(--dark-deep);
-    color: var(--txt-main);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
+/* ── GATE ── */
+#gate{
+  position:fixed;inset:0;background:var(--dark);
+  display:flex;align-items:center;justify-content:center;z-index:999;
+  transition:opacity .5s;
 }
+#gate.hide{opacity:0;pointer-events:none}
+.gate-box{
+  background:var(--dark3);border:1px solid rgba(201,168,76,.28);border-radius:22px;
+  padding:50px 42px;text-align:center;width:370px;
+  box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 80px rgba(201,168,76,.04);
+}
+.gate-crown{font-size:3.8rem;display:block;margin-bottom:18px;
+  filter:drop-shadow(0 0 22px rgba(201,168,76,.5));animation:crownpls 3s ease-in-out infinite}
+@keyframes crownpls{0%,100%{filter:drop-shadow(0 0 22px rgba(201,168,76,.5))}50%{filter:drop-shadow(0 0 40px rgba(201,168,76,.9))}}
+.gate-box h1{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold);letter-spacing:.18em;margin-bottom:6px}
+.gate-box p{font-size:.8rem;color:var(--txt3);font-style:italic;margin-bottom:30px;line-height:1.7}
+.gate-input,.gate-select{
+  width:100%;padding:13px 16px;margin-bottom:12px;
+  background:var(--dark4);border:1px solid rgba(201,168,76,.14);border-radius:11px;
+  color:var(--txt);font-family:'Crimson Pro',serif;font-size:.9rem;outline:none;
+  transition:border-color .2s;
+}
+.gate-input:focus,.gate-select:focus{border-color:rgba(201,168,76,.55)}
+.gate-select option{background:var(--dark4)}
+.gate-btn{
+  width:100%;padding:14px;margin-top:4px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none;border-radius:11px;
+  font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;letter-spacing:.12em;
+  color:var(--dark);cursor:pointer;transition:all .25s;
+}
+.gate-btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(201,168,76,.35)}
+.gate-err{font-size:.74rem;color:var(--red);margin-top:10px;min-height:16px;font-style:italic}
 
-/* === APP LAYOUT === */
-#app-container { display: flex; width: 100%; height: 100%; }
+/* ── APP ── */
+#app{display:none;height:100vh;flex-direction:column}
+#app.on{display:flex}
 
-/* SIDEBAR (Teamly Workspace uslubida) */
-.sidebar {
-    width: var(--sidebar-w);
-    background: var(--dark-card);
-    border-right: 1px solid var(--dark-border);
-    display: flex;
-    flex-direction: column;
-    z-index: 10;
+/* ── HEADER ── */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;height:54px;flex-shrink:0;
+  background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.1);position:relative;
 }
-.sidebar-header {
-    padding: 24px 20px;
-    border-bottom: 1px solid var(--dark-border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.sidebar-logo {
-    font-family: 'Cinzel', serif;
-    font-weight: 900;
-    font-size: 1.2rem;
-    color: var(--gold);
-    letter-spacing: 2px;
-}
-.user-profile-box {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--dark-border);
-    background: rgba(255,255,255,0.02);
-}
-.role-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    background: var(--gold);
-    color: var(--dark-deep);
-    margin-top: 4px;
-}
-.nav-menu { padding: 20px 12px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--txt-muted);
-    font-weight: 500;
-    transition: all 0.2s;
-}
-.nav-item:hover, .nav-item.active {
-    background: rgba(201, 168, 76, 0.1);
-    color: var(--gold);
-}
+.hdr::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,.25),transparent)}
+.hdr-logo{display:flex;align-items:center;gap:10px;font-family:'Cinzel',serif;
+  font-size:1.05rem;color:var(--gold);letter-spacing:.18em}
+.hdr-crown{font-size:1.25rem;filter:drop-shadow(0 0 8px rgba(201,168,76,.6))}
+.hdr-right{display:flex;align-items:center;gap:14px;font-size:.72rem;color:var(--txt3)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);animation:pls 2s infinite;display:inline-block}
+@keyframes pls{0%,100%{opacity:1}50%{opacity:.2}}
+.hdr-model{font-style:italic}
 
-/* MAIN CONTENT AREA */
-.main-content { flex: 1; display: flex; flex-direction: column; background: var(--dark-bg); position: relative; }
+/* ── LAYOUT ── */
+.layout{display:flex;flex:1;overflow:hidden}
 
-/* SCREEN CONTROLLERS */
-.screen { display: none; width: 100%; height: 100%; flex-direction: column; }
-.screen.active-screen { display: flex; }
+/* ── WORLD (chap) ── */
+.world{flex:1;position:relative;overflow:hidden;background:var(--dark)}
+.world-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px);
+  background-size:50px 50px;
+}
+.world-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(201,168,76,.03),transparent);
+}
+#worldEmpty{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;pointer-events:none;transition:opacity .4s;
+}
+#worldEmpty h2{font-family:'Cinzel',serif;font-size:1.7rem;
+  color:rgba(201,168,76,.07);letter-spacing:.3em}
+#worldEmpty p{font-size:.78rem;color:rgba(160,144,112,.18);font-style:italic;margin-top:8px}
 
-/* === 1. API SETUP MODAL/SCREEN === */
-.api-screen {
-    position: fixed; inset: 0; background: var(--dark-deep); z-index: 999;
-    display: flex; align-items: center; justify-content: center;
+/* Agent kartasi (world ichida suzuvchi) */
+.agent-card{
+  position:absolute;
+  background:var(--dark3);border:1px solid rgba(201,168,76,.18);border-radius:14px;
+  padding:16px 18px;min-width:150px;cursor:pointer;
+  transition:all .3s ease;
+  animation:cardIn .55s cubic-bezier(.34,1.45,.64,1) both;
 }
-.api-card {
-    background: var(--dark-card); border: 1px solid var(--gold); padding: 40px;
-    border-radius: 20px; width: 100%; max-width: 450px; text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px var(--gold-glow);
+@keyframes cardIn{from{opacity:0;transform:scale(.6) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.agent-card:hover{
+  border-color:rgba(201,168,76,.5);transform:translateY(-5px);
+  box-shadow:0 15px 40px rgba(0,0,0,.5),0 0 25px rgba(201,168,76,.08);
 }
-.api-card h2 { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 15px; }
-.api-select, .api-input {
-    width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--dark-border);
-    border-radius: 10px; color: white; margin-bottom: 16px; outline: none; font-size: 0.95rem;
+.ac-icon{font-size:2rem;margin-bottom:8px;display:block}
+.ac-name{font-family:'Cinzel',serif;font-size:.74rem;color:var(--gold);letter-spacing:.09em;text-transform:uppercase}
+.ac-type{font-size:.68rem;color:var(--txt3);font-style:italic;margin-top:3px}
+.ac-live{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:.63rem;color:var(--txt3)}
+.ac-livdot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)}
+.ac-open{
+  display:block;margin-top:10px;text-align:center;
+  font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.08em;
+  color:rgba(201,168,76,.6);border-top:1px solid rgba(201,168,76,.1);
+  padding-top:8px;transition:color .2s;
 }
-.api-input:focus { border-color: var(--gold); }
-.btn-prime {
-    width: 100%; padding: 14px; background: linear-gradient(135deg, var(--gold), #e8c97a);
-    border: none; border-radius: 10px; color: var(--dark-deep); font-weight: 700;
-    cursor: pointer; font-family: 'Cinzel', serif; letter-spacing: 1px;
-}
+.agent-card:hover .ac-open{color:var(--gold)}
 
-/* === 2. LANDING CAROUSEL SCREEN === */
-.landing-header { padding: 30px; text-align: center; }
-.landing-header h1 { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 3px; }
-.carousel-container {
-    flex: 1; display: flex; align-items: center; justify-content: center; overflow-x: auto;
-    padding: 40px; gap: 30px; scroll-behavior: smooth;
+/* ── QIROL CHAT (o'ng) ── */
+.king-panel{
+  width:375px;flex-shrink:0;display:flex;flex-direction:column;
+  background:var(--dark2);border-left:1px solid rgba(201,168,76,.1);
 }
-.agent-card {
-    min-width: 280px; max-width: 280px; height: 380px; background: var(--dark-card);
-    border: 1px solid var(--dark-border); border-radius: 20px; padding: 30px 24px;
-    display: flex; flex-direction: column; align-items: center; text-align: center;
-    cursor: pointer; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-    position: relative; overflow: hidden;
+.kp-head{
+  padding:14px 18px;border-bottom:1px solid rgba(201,168,76,.07);
+  background:var(--dark3);flex-shrink:0;display:flex;align-items:center;gap:11px;
 }
-.agent-card::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--c, var(--gold));
+.kp-avatar{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#8a6520,var(--gold));
+  display:flex;align-items:center;justify-content:center;font-size:1.15rem;
+  box-shadow:0 0 16px rgba(201,168,76,.28);
 }
-.agent-card:hover {
-    transform: translateY(-10px); border-color: var(--c, var(--gold));
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 15px rgba(255,255,255,0.05);
-}
-.agent-icon { font-size: 3.5rem; margin-bottom: 20px; }
-.agent-title { font-family: 'Cinzel', serif; color: var(--txt-main); font-size: 1.2rem; margin-bottom: 10px; }
-.agent-desc { font-size: 0.85rem; color: var(--txt-muted); line-height: 1.5; flex: 1; }
+.kp-name{font-family:'Cinzel',serif;font-size:.88rem;color:var(--gold)}
+.kp-sub{font-size:.67rem;color:var(--txt3);font-style:italic;margin-top:2px}
 
-/* === 3. AGENT WORKSPACE (XONA) === */
-.workspace-layout { display: flex; width: 100%; height: 100%; }
-.workspace-left { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--dark-border); padding: 24px; overflow-y: auto; }
-.workspace-right { width: 400px; display: flex; flex-direction: column; background: var(--dark-card); }
-
-/* Blocknot/Darslik paneli */
-.blocknot-header { display: flex; align-items: center; gap: 15px; margin-bottom: 24px; }
-.blocknot-header .icon { font-size: 2.5rem; }
-.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 20px; }
-.skill-btn {
-    background: rgba(255,255,255,0.03); border: 1px solid var(--dark-border); color: var(--txt-main);
-    padding: 14px; border-radius: 10px; cursor: pointer; text-align: left; display: flex; align-items: center;
-    gap: 10px; transition: all 0.2s; font-size: 0.85rem;
+/* messages */
+.kp-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.kp-msgs::-webkit-scrollbar{width:3px}
+.kp-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.12);border-radius:2px}
+.msg{display:flex;flex-direction:column;gap:3px;animation:mi .28s ease both}
+@keyframes mi{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-items:flex-end}
+.msg.king{align-items:flex-start}
+.msg-bubble{
+  max-width:91%;padding:9px 13px;border-radius:10px;
+  font-size:.84rem;line-height:1.65;
 }
-.skill-btn:hover { background: var(--gold-glow); border-color: var(--gold); }
-
-/* Chat Tizimi */
-.chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
-.msg { max-width: 85%; padding: 12px 16px; border-radius: 14px; line-height: 1.5; font-size: 0.9rem; }
-.msg.user { background: var(--gold-glow); border: 1px solid rgba(201,168,76,0.3); align-self: flex-end; border-bottom-right-radius: 2px; }
-.msg.ai { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); align-self: flex-start; border-bottom-left-radius: 2px; }
-.chat-input-area { padding: 16px; border-top: 1px solid var(--dark-border); display: flex; gap: 10px; }
-.chat-input {
-    flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--dark-border); border-radius: 8px;
-    padding: 12px; color: white; outline: none; resize: none; height: 45px;
+.msg.user .msg-bubble{
+  background:linear-gradient(135deg,rgba(201,168,76,.17),rgba(201,168,76,.07));
+  border:1px solid rgba(201,168,76,.22);border-bottom-right-radius:2px;
 }
+.msg.king .msg-bubble{
+  background:var(--dark3);border:1px solid rgba(255,255,255,.05);
+  border-bottom-left-radius:2px;
+}
+.msg-time{font-size:.6rem;color:var(--txt3);padding:0 4px}
 
-/* === 4. QIROL CONTROL PANEL === */
-.panel-wrapper { padding: 30px; overflow-y: auto; width: 100%; }
-.panel-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-.crud-box { background: var(--dark-card); border: 1px solid var(--dark-border); padding: 24px; border-radius: 16px; }
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--txt-muted); }
-.crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-.crud-table th, .crud-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--dark-border); font-size: 0.85rem; }
-.crud-table th { color: var(--gold); font-family: 'Cinzel', serif; }
+/* agent action tag - bosib xona ochiladi */
+.agent-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:6px;padding:5px 12px;border-radius:999px;
+  font-family:'Cinzel',serif;font-size:.67rem;letter-spacing:.06em;
+  background:rgba(201,168,76,.1);color:var(--gold);
+  border:1px solid rgba(201,168,76,.3);cursor:pointer;transition:all .2s;
+}
+.agent-tag:hover{background:rgba(201,168,76,.22);transform:translateX(3px)}
 
-/* Dynamic Helper Utilities */
-.hidden { display: none !important; }
-.stream-loading { opacity: 0.6; pointer-events: none; }
+/* typing */
+.typing-box{
+  display:flex;align-items:center;gap:4px;padding:9px 13px;
+  background:var(--dark3);border-radius:10px;border-bottom-left-radius:2px;
+  border:1px solid rgba(255,255,255,.05);width:fit-content;
+}
+.typing-box span{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:td 1.4s infinite}
+.typing-box span:nth-child(2){animation-delay:.22s}
+.typing-box span:nth-child(3){animation-delay:.44s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}}
+
+/* input */
+.kp-input-area{padding:12px;border-top:1px solid rgba(201,168,76,.08);background:var(--dark3);flex-shrink:0}
+.kp-wrap{
+  display:flex;gap:8px;align-items:flex-end;
+  background:var(--dark4);border:1px solid rgba(201,168,76,.13);border-radius:10px;
+  padding:7px 10px;transition:border-color .2s;
+}
+.kp-wrap:focus-within{border-color:rgba(201,168,76,.42)}
+.kp-ta{
+  flex:1;background:transparent;border:none;color:var(--txt);
+  font-family:'Crimson Pro',serif;font-size:.9rem;line-height:1.5;
+  resize:none;outline:none;max-height:90px;min-height:22px;
+}
+.kp-ta::placeholder{color:var(--txt3);font-style:italic}
+.kp-send{
+  width:32px;height:32px;border-radius:7px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none;cursor:pointer;font-size:14px;color:var(--dark);font-weight:700;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.kp-send:hover{transform:scale(1.1);box-shadow:0 4px 16px rgba(201,168,76,.35)}
+.kp-send:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.kp-hint{font-size:.64rem;color:var(--txt3);text-align:center;margin-top:7px;font-style:italic}
+
+/* notif */
+.notif{
+  position:fixed;bottom:22px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--dark3);border:1px solid rgba(201,168,76,.3);border-radius:10px;
+  padding:9px 20px;font-size:.8rem;color:var(--gold);font-style:italic;
+  z-index:500;transition:transform .4s cubic-bezier(.34,1.4,.64,1);pointer-events:none;
+}
+.notif.show{transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
-<div id="apiScreen" class="api-screen">
-    <div class="api-card">
-        <div style="font-size: 3.5rem; margin-bottom: 10px;">👑</div>
-        <h2>Qirol Imperiyasi</h2>
-        <p style="color: var(--txt-muted); font-size: 0.85rem; margin-bottom: 25px;">Davom etish uchun OpenRouter API kalitini kiriting va modelni tanlang.</p>
-        
-        <select id="modelSelect" class="api-select">
-            <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (Kuchli)</option>
-            <option value="anthropic/claude-3-haiku">Claude 3 Haiku (Tezkor)</option>
-        </select>
-        
-        <input type="password" id="apiKeyInput" class="api-input" placeholder="sk-or-v1-..." value="">
-        <button class="btn-prime" onclick="initEmpire()">⚡ Imperiyani Boshlash</button>
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <span class="gate-crown">👑</span>
+    <h1>QIROLLIK</h1>
+    <p>OpenRouter API kalitini kiriting.<br>Qirol uyg'onadi — imperiya boshlaydi.</p>
+    <input class="gate-input" type="password" id="keyInput" placeholder="sk-or-v1-...">
+    <select class="gate-select" id="modelSel">
+      <option value="anthropic/claude-3-5-sonnet-20241022">Claude Sonnet 3.5 — Kuchli</option>
+      <option value="anthropic/claude-3-haiku-20240307">Claude Haiku 3 — Tez</option>
+      <option value="anthropic/claude-sonnet-4-5">Claude Sonnet 4.5</option>
+    </select>
+    <button class="gate-btn" onclick="G.start()">⚡ Qirolni Uyg'otish</button>
+    <div class="gate-err" id="gateErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="hdr">
+    <div class="hdr-logo">
+      <span class="hdr-crown">👑</span>
+      QIROLLIK
     </div>
+    <div class="hdr-right">
+      <span class="live-dot"></span>
+      <span class="hdr-model" id="hdrModel"></span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- WORLD -->
+    <div class="world" id="world">
+      <div class="world-grid"></div>
+      <div class="world-glow"></div>
+      <div id="worldEmpty">
+        <h2>BO'SH QIROLLIK</h2>
+        <p>Qirolga buyruq bering — agentlar paydo bo'ladi</p>
+      </div>
+      <!-- agent kartalar bu yerga dinamik qo'shiladi -->
+    </div>
+
+    <!-- KING CHAT -->
+    <div class="king-panel">
+      <div class="kp-head">
+        <div class="kp-avatar">👑</div>
+        <div>
+          <div class="kp-name">QIROL</div>
+          <div class="kp-sub">Sizning shaxsiy AI hukmdoringiz</div>
+        </div>
+      </div>
+      <div class="kp-msgs" id="msgs"></div>
+      <div class="kp-input-area">
+        <div class="kp-wrap">
+          <textarea class="kp-ta" id="ta" placeholder="Qirolga buyruq bering..." rows="1"></textarea>
+          <button class="kp-send" id="sendBtn" onclick="K.send()">↑</button>
+        </div>
+        <div class="kp-hint">Enter — yuborish &nbsp;·&nbsp; Shift+Enter — yangi qator</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div id="appContainer" class="hidden" style="display: flex; width: 100%;">
-    
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <span style="font-size: 1.5rem;">👑</span>
-            <span class="sidebar-logo">QIROLLIK</span>
-        </div>
-        <div class="user-profile-box">
-            <div style="font-weight: 600; font-size: 0.9rem;" id="lblUsername">Sherzod (Cherzov)</div>
-            <div class="role-badge" id="lblRole">Qirol</div>
-        </div>
-        <nav class="nav-menu">
-            <div class="nav-item active" onclick="switchScreen('landing')" id="nav-landing">🌐 Bosh Sahifa</div>
-            <div class="nav-item" onclick="switchScreen('qirolPanel')" id="nav-panel">🎛️ Qirol Paneli</div>
-        </nav>
-    </aside>
-
-    <main class="main-content">
-        
-        <section id="scrLanding" class="screen active-screen">
-            <div class="landing-header">
-                <h1>AI Vazirlar Mahkamasi</h1>
-                <p style="color: var(--txt-muted); margin-top: 5px;">O'zingizga kerakli bo'lgan ixtisoslashgan xonani tanlang</p>
-            </div>
-            <div class="carousel-container" id="carouselWrapper">
-                </div>
-        </section>
-
-        <section id="scrWorkspace" class="screen">
-            <div class="workspace-layout">
-                
-                <div class="workspace-left" id="wpLeftArea">
-                    <div class="blocknot-header">
-                        <div id="wpIcon" class="icon">📊</div>
-                        <div>
-                            <h2 id="wpTitle" style="font-family: 'Cinzel', serif;">Excel Mutaxassisi</h2>
-                            <p id="wpDesc" style="color: var(--txt-muted); font-size: 0.85rem;">Murakkab formulalar va tahliliy hisobotlar</p>
-                        </div>
-                    </div>
-                    <hr style="border: 0; border-top: 1px solid var(--dark-border); margin: 15px 0;">
-                    
-                    <h3 style="font-size: 1rem; margin-top: 10px;">Tezkor Ko'nikmalar (Skills)</h3>
-                    <div class="skills-grid" id="wpSkillsGrid">
-                        </div>
-                    
-                    <div style="margin-top: 30px; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border: 1px dashed var(--dark-border);">
-                        <h4 style="color: var(--gold); margin-bottom: 8px;">📋 Tizim Yo'riqnomasi (System Prompt)</h4>
-                        <p id="wpSystemPromptText" style="font-size: 0.8rem; color: var(--txt-muted); line-height: 1.6; font-style: italic;"></p>
-                    </div>
-                </div>
-
-                <div class="workspace-right">
-                    <div class="chat-container">
-                        <div style="padding: 16px; border-bottom: 1px solid var(--dark-border); background: rgba(0,0,0,0.15); font-weight: 600; text-align: center;" id="chatHeaderName">
-                            AI Yordamchi Chat
-                        </div>
-                        <div class="chat-messages" id="chatMessagesBox">
-                            </div>
-                        <div class="chat-input-area">
-                            <textarea id="chatInput" class="chat-input" placeholder="Xabarni shu yerga yozing... (Enter orqali yuborish)"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <section id="scrQirolPanel" class="screen">
-            <div class="panel-wrapper">
-                <h2 style="font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 25px;">🎛️ Qirol Oliy Nazorat Kengashi</h2>
-                
-                <div class="panel-grid">
-                    <div class="crud-box">
-                        <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--gold);">🤖 Yangi Vazirlar (Agent) Yaratish</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div class="form-group">
-                                <label>Agent Nomi</label>
-                                <input type="text" id="addAgentName" class="api-input" placeholder="Masalan: SAP PP Maslahatchi">
-                            </div>
-                            <div class="form-group">
-                                <label>Emoji Icon</label>
-                                <input type="text" id="addAgentIcon" class="api-input" placeholder="💼">
-                            </div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div class="form-group">
-                                <label>Turi (Type)</label>
-                                <select id="addAgentType" class="api-select">
-                                    <option value="sap">SAP Production</option>
-                                    <option value="excel">Excel Data</option>
-                                    <option value="sport">Sport Fitnes</option>
-                                    <option value="custom">Custom Erkin</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Rang Kodi (HEX)</label>
-                                <input type="text" id="addAgentColor" class="api-input" value="#c9a84c">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Qisqa Tavsif</label>
-                            <input type="text" id="addAgentDesc" class="api-input" placeholder="Foydalanuvchi ko'radigan qisqa tekst...">
-                        </div>
-                        <div class="form-group">
-                            <label>Tizimli Yo'riqnoma (System Prompt / TZ)</label>
-                            <textarea id="addAgentPrompt" class="api-input" style="height: 80px; resize: vertical;" placeholder="Sen Sherzodga ishlab chiqarish rejalashtirish bo'yicha yordam beruvchi eng professional SAP PP mutaxassisisan..."></textarea>
-                        </div>
-                        <button class="btn-prime" onclick="createCustomAgent()">✨ Yangi Agentni Imperiyaga Qo'shish</button>
-                    </div>
-
-                    <div class="crud-box">
-                        <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--gold);">📊 Faollik Loglari (Firebase Mock)</h3>
-                        <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; max-height: 340px; overflow-y: auto;">
-                            <table class="crud-table" id="logTable">
-                                <thead>
-                                    <tr><th>Kim</th><th>Agent</th><th>Vaqt</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Askar_01</td><td>⚽ Sport</td><td>18:42</td></tr>
-                                    <tr><td>Qomondon</td><td>📊 Excel</td><td>19:15</td></tr>
-                                    <tr><td>Sherzod</td><td>💼 SAP PP</td><td>Hozir</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="crud-box" style="margin-top: 30px;">
-                    <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--gold);">📋 Amaldagi Agentlar Boshqaruvi</h3>
-                    <table class="crud-table" id="managementAgentTable">
-                        <thead>
-                            <tr><th>Icon</th><th>Nom</th><th>Tur</th><th>Holat</th><th>Amal</th></tr>
-                        </thead>
-                        <tbody id="managementAgentRow">
-                            </tbody>
-                    </table>
-                </div>
-
-            </div>
-        </section>
-
-    </main>
-</div>
+<div class="notif" id="notif"></div>
 
 <script>
-// TIZIMNING GLOBAL STATELARI
-let CHOSEN_MODEL = 'anthropic/claude-3.5-sonnet';
-let selectedAgentId = null;
+// ═══════════════════════════════
+//  STATE
+// ═══════════════════════════════
+const S = {
+  key: '',
+  model: '',
+  agents: [],       // { id, name, icon, type, description, systemPrompt, color, x, y }
+  history: [],      // Qirol chat tarixi
+  busy: false,
+};
 
-// Birlamchi ma'lumotlar bazasi (Firebase mavjud bo'lsa bular Firestore orqali o'qiladi)
-let localAgents = [
-    {
-        id: "excel_core",
-        name: "Excel Tahlilchisi",
-        icon: "📊",
-        color: "#107c41",
-        type: "excel",
-        description: "Murakkab makroslar, qidiruv tizimlari va ma'lumotlar tahlili ustasi.",
-        systemPrompt: "Sen professional Excel ekspertisan. Sherzodga custom qidiruv asboblari va ma'lumotlar tahlilida yordam berasan. Oddiy o'zbek tilida, ortiqcha adabiy so'zlarsiz javob ber.",
-        skills: [
-            { id: "s1", name: "Custom qidiruv kodi", prompt: "Manga ma'lumotlar ichidan kerakli tartib raqamni topadigan UI qidiruv tizimi kodini yozib ber.", icon: "⚡" },
-            { id: "s2", name: "VLOOKUP muammosi", prompt: "VLOOKUP xatolik beryapti, tekshirish usullarini ko'rsat.", icon: "🔍" }
-        ],
-        active: true
-    },
-    {
-        id: "sap_pp_core",
-        name: "SAP PP Eksperti",
-        icon: "💼",
-        color: "#008fd3",
-        type: "sap",
-        description: "Ishlab chiqarishni rejalashtirish (PP) va qo'shimcha xarajatlar tahlili.",
-        systemPrompt: "Sen zavod tizimidagi SAP PP moduli bo'yicha bosh maslahatchisan. FBL1N va MIRO tranzaksiyalari bo'yicha master klass o'tasan. Oddiy va tushunarli tilda so'zla.",
-        skills: [
-            { id: "s3", name: "Dop Rasxod logic", prompt: "FBL1N va MIRO dagi dop rasxod (qo'shimcha xarajatlar) hisobini to'g'rilash logikasini tushuntir.", icon: "💰" }
-        ],
-        active: true
-    },
-    {
-        id: "sport_coach",
-        name: "Sport va Sog'liq",
-        icon: "⚽",
-        color: "#e05050",
-        type: "sport",
-        description: "INTJ xarakteriga mos keluvchi individual mashq va reja taqsimoti.",
-        systemPrompt: "Sen professional fitnes va sport murabbiysan. Sherzodning rejasiga mos dasturlar tuzasan.",
-        skills: [
-            { id: "s4", name: "Kechki mashqlar", prompt: "Ishdan keyin charchoqni yozadigan qisqa va samarali mashqlar rejasi.", icon: "💪" }
-        ],
-        active: true
+// ═══════════════════════════════
+//  GATE
+// ═══════════════════════════════
+const G = {
+  start() {
+    const k = document.getElementById('keyInput').value.trim();
+    const m = document.getElementById('modelSel').value;
+    if (!k || k.length < 15) {
+      document.getElementById('gateErr').textContent = '❌ API kalit noto\'g\'ri!';
+      return;
     }
-];
+    S.key = k;
+    S.model = m;
+    sessionStorage.setItem('qk', k);
+    sessionStorage.setItem('qm', m);
+    document.getElementById('gate').classList.add('hide');
+    document.getElementById('app').classList.add('on');
+    document.getElementById('hdrModel').textContent = m.split('/')[1] || m;
+    K.greet();
+  },
+};
 
-// 1. INITIALIZE EMPIRE (API KEY CONFIGURATION)
-function initEmpire() {
-    const key = document.getElementById('apiKeyInput').value.trim();
-    if(key.length < 15) {
-        alert("Iltimos, haqiqiy OpenRouter API kalitini kiriting!");
-        return;
+// ═══════════════════════════════
+//  NOTIFY
+// ═══════════════════════════════
+function notif(t) {
+  const n = document.getElementById('notif');
+  n.textContent = t;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 2600);
+}
+
+// ═══════════════════════════════
+//  WORLD — agent kartalar
+// ═══════════════════════════════
+const W = {
+  positions: [
+    {x:60,y:80},{x:260,y:60},{x:460,y:90},{x:660,y:70},
+    {x:80,y:260},{x:280,y:240},{x:480,y:270},{x:680,y:250},
+    {x:100,y:420},{x:300,y:400},{x:500,y:430},{x:700,y:410},
+  ],
+  usedPos: 0,
+
+  addAgent(agent) {
+    // World bo'sh yazuvi
+    if (S.agents.length === 0) {
+      document.getElementById('worldEmpty').style.opacity = '0';
+      setTimeout(() => document.getElementById('worldEmpty').style.display = 'none', 400);
     }
-    
-    // Xavfsizlik: Faqat sessionStorage ichida saqlanadi, serverga ketmaydi
-    sessionStorage.setItem('QIROL_SECRET_KEY', key);
-    CHOSEN_MODEL = document.getElementById('modelSelect').value;
-    
-    document.getElementById('apiScreen').classList.add('hidden');
-    document.getElementById('appContainer').classList.remove('hidden');
-    
-    renderLandingCarousel();
-    renderManagementTable();
-}
 
-// 2. RENDERING ENGINE
-function renderLandingCarousel() {
-    const wrapper = document.getElementById('carouselWrapper');
-    wrapper.innerHTML = '';
-    
-    localAgents.filter(a => a.active).forEach(agent => {
-        const card = document.createElement('div');
-        card.className = 'agent-card';
-        card.style.setProperty('--c', agent.color);
-        card.onclick = () => openAgentWorkspace(agent.id);
-        
-        card.innerHTML = `
-            <div class="agent-icon">${agent.icon}</div>
-            <div class="agent-title">${agent.name}</div>
-            <div class="agent-desc">${agent.description}</div>
-            <div style="font-size:0.75rem; color:${agent.color}; font-weight:700; margin-top:10px;">XONAGA KIRISH →</div>
-        `;
-        wrapper.appendChild(card);
-    });
-}
+    // Pozitsiya
+    const pos = this.positions[this.usedPos % this.positions.length];
+    this.usedPos++;
+    agent.x = pos.x;
+    agent.y = pos.y;
+    S.agents.push(agent);
 
-function renderManagementTable() {
-    const tbody = document.getElementById('managementAgentRow');
-    tbody.innerHTML = '';
-    
-    localAgents.forEach(agent => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <div style="font-size:1.2rem; padding:5px;">${agent.icon}</div>
-            <td><b>${agent.name}</b></td>
-            <td><span style="text-transform:uppercase; font-size:0.75rem; color:var(--gold);">${agent.type}</span></td>
-            <td><span style="color:${agent.active ? '#50c878' : '#e05050'}">${agent.active ? 'Faol' : 'To\'xtatilgan'}</span></td>
-            <td>
-                <button onclick="toggleAgentStatus('${agent.id}')" style="background:transparent; border:1px solid var(--txt-muted); color:white; padding:4px 8px; border-radius:4px; cursor:pointer;">
-                    O'zgartirish
-                </button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
+    // Karta
+    const card = document.createElement('div');
+    card.className = 'agent-card';
+    card.id = 'ac_' + agent.id;
+    card.style.left = agent.x + 'px';
+    card.style.top  = agent.y + 'px';
+    if (agent.color) card.style.borderColor = agent.color + '55';
+    card.innerHTML = `
+      <span class="ac-icon">${agent.icon || '🤖'}</span>
+      <div class="ac-name">${agent.name}</div>
+      <div class="ac-type">${agent.description || agent.type}</div>
+      <div class="ac-live"><div class="ac-livdot"></div>Faol</div>
+      <span class="ac-open">XONAGA KIRISH →</span>`;
+    card.onclick = () => W.openRoom(agent);
+    document.getElementById('world').appendChild(card);
+    notif(`✅ "${agent.name}" imperiyaga qo'shildi!`);
+  },
 
-// 3. WORKSPACE OPERATION (XONALAR)
-function openAgentWorkspace(agentId) {
-    const agent = localAgents.find(a => a.id === agentId);
-    if(!agent) return;
-    
-    selectedAgentId = agentId;
-    
-    // UI yangilash
-    document.getElementById('wpTitle').innerText = agent.name;
-    document.getElementById('wpIcon').innerText = agent.icon;
-    document.getElementById('wpDesc').innerText = agent.description;
-    document.getElementById('wpSystemPromptText').innerText = agent.systemPrompt;
-    document.getElementById('chatHeaderName').innerText = `${agent.icon} ${agent.name} xonasi`;
-    
-    // Skill tugmalarini joylash
-    const skillContainer = document.getElementById('wpSkillsGrid');
-    skillContainer.innerHTML = '';
-    agent.skills.forEach(skill => {
-        const btn = document.createElement('button');
-        btn.className = 'skill-btn';
-        btn.onclick = () => triggerSkillPrompt(skill.prompt);
-        btn.innerHTML = `<span>${skill.icon}</span> <b>${skill.name}</b>`;
-        skillContainer.appendChild(btn);
-    });
-    
-    // Chat oynasini tozalash va birinchi xabarni qo'shish
-    document.getElementById('chatMessagesBox').innerHTML = '';
-    appendChatMessage('ai', `Assalomu alaykum Sherzod. Men ${agent.name} xizmatga tayyorman. Buyruq bering.`);
-    
-    // Ekranni almashtirish
-    switchScreen('workspace');
-}
+  openRoom(agent) {
+    // Agentning o'z xonasini yangi oynada ochadi
+    const html = W.buildRoomHTML(agent);
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    // Xona o'chib ketmasin deb URL ni kechroq tozalaymiz
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    notif(`🚀 "${agent.name}" xonasi ochildi`);
+  },
 
-function triggerSkillPrompt(promptText) {
-    document.getElementById('chatInput').value = promptText;
-    executeChatSend();
-}
-
-// 4. OPENROUTER API STREAM LOGIC
-async function executeChatSend() {
-    const input = document.getElementById('chatInput');
-    const msgText = input.value.trim();
-    if(!msgText || !selectedAgentId) return;
-    
-    appendChatMessage('user', msgText);
-    input.value = '';
-    
-    const agent = localAgents.find(a => a.id === selectedAgentId);
-    const apiKey = sessionStorage.getItem('QIROL_SECRET_KEY');
-    
-    const chatBox = document.getElementById('chatMessagesBox');
-    const aiMessageDiv = appendChatMessage('ai', 'O'ylamoqdaman...');
-    aiMessageDiv.classList.add('stream-loading');
-    
-    try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${apiKey}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "model": CHOSEN_MODEL,
-                "messages": [
-                    { "role": "system", "content": agent.systemPrompt },
-                    { "role": "user", "content": msgText }
-                ]
-            })
-        });
-        
-        const data = await response.json();
-        aiMessageDiv.classList.remove('stream-loading');
-        
-        if(data.choices && data.choices[0]) {
-            aiMessageDiv.innerText = data.choices[0].message.content;
-            logActionToFirebaseMock('Sherzod', agent.name);
-        } else {
-            aiMessageDiv.innerText = "Xato: Javob olishda muammo yuz berdi.";
-        }
-        
-    } catch (error) {
-        aiMessageDiv.classList.remove('stream-loading');
-        aiMessageDiv.innerText = "Ulanish xatosi. Kalitni tekshiring.";
-    }
-}
-
-function appendChatMessage(sender, text) {
-    const box = document.getElementById('chatMessagesBox');
-    const msg = document.createElement('div');
-    msg.className = `msg ${sender}`;
-    msg.innerText = text;
-    box.appendChild(msg);
-    box.scrollTop = box.scrollHeight;
-    return msg;
-}
-
-// 5. QIROL CRUD OPERATSIYALARI
-function createCustomAgent() {
-    const name = document.getElementById('addAgentName').value.trim();
-    const icon = document.getElementById('addAgentIcon').value.trim() || "🤖";
-    const type = document.getElementById('addAgentType').value;
-    const color = document.getElementById('addAgentColor').value.trim();
-    const desc = document.getElementById('addAgentDesc').value.trim();
-    const prompt = document.getElementById('addAgentPrompt').value.trim();
-    
-    if(!name || !prompt) {
-        alert("Nom va System Prompt majburiy!");
-        return;
-    }
-    
-    const newAgent = {
-        id: "custom_" + Date.now(),
-        name: name,
-        icon: icon,
-        color: color,
-        type: type,
-        description: desc,
-        systemPrompt: prompt,
-        skills: [{ id: "dyn_1", name: "Konsultatsiya", prompt: "Menga ushbu yo'nalishda strategiya ber.", icon: "💡" }],
-        active: true
+  buildRoomHTML(agent) {
+    // Agent xonasini to'liq HTML sifatida generatsiya qiladi
+    // Har bir agent o'z system promtiga ega, xotira faqat shu sessiya
+    const colorMain = agent.color || '#c9a84c';
+    const escaped = {
+      name: agent.name.replace(/'/g,"\\'"),
+      icon: agent.icon || '🤖',
+      desc: (agent.description||'').replace(/'/g,"\\'"),
+      sys:  (agent.systemPrompt||'').replace(/`/g,'\\`').replace(/\\/g,'\\\\'),
     };
-    
-    localAgents.push(newAgent);
-    
-    // Tozalash
-    document.getElementById('addAgentName').value = '';
-    document.getElementById('addAgentDesc').value = '';
-    document.getElementById('addAgentPrompt').value = '';
-    
-    alert("Yangi vazir imperiyaga muvaffaqiyatli qo'shildi!");
-    
-    renderLandingCarousel();
-    renderManagementTable();
+    return `<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${agent.icon} ${agent.name}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c:${colorMain};
+  --dark:#08080f;--dark2:#0f0f1c;--dark3:#17172a;--dark4:#1f1f35;
+  --txt:#eee8df;--txt2:#9a9080;--txt3:#5a5040;
+  --gold:#c9a84c;--green:#4ecb71;
+}
+html,body{height:100%;background:var(--dark);color:var(--txt);font-family:'Crimson Pro',serif;overflow:hidden;display:flex;flex-direction:column}
+.room-hdr{
+  display:flex;align-items:center;gap:14px;padding:0 24px;height:54px;flex-shrink:0;
+  background:var(--dark2);border-bottom:1px solid var(--c,rgba(201,168,76,.2));
+}
+.room-hdr-icon{font-size:1.7rem}
+.room-hdr-name{font-family:'Cinzel',serif;font-size:1rem;color:var(--c);letter-spacing:.1em}
+.room-hdr-desc{font-size:.72rem;color:var(--txt3);font-style:italic;margin-top:2px}
+.room-hdr-badge{
+  margin-left:auto;padding:4px 12px;border-radius:999px;
+  font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;
+  border:1px solid var(--c);color:var(--c);background:rgba(0,0,0,.2);
+}
+.room-body{flex:1;display:flex;overflow:hidden}
+
+/* LEFT — agent o'z interfeysi (AI tomonidan render) */
+.room-left{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  border-right:1px solid rgba(255,255,255,.06);
+}
+.room-left-content{flex:1;overflow-y:auto;padding:20px}
+.room-left-content::-webkit-scrollbar{width:4px}
+.room-left-content::-webkit-scrollbar-thumb{background:rgba(201,168,76,.15);border-radius:2px}
+
+/* RIGHT — chat */
+.room-right{
+  width:360px;flex-shrink:0;display:flex;flex-direction:column;
+  background:var(--dark2);
+}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chat-msgs::-webkit-scrollbar{width:3px}
+.chat-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.12);border-radius:2px}
+.cm{display:flex;flex-direction:column;gap:3px;animation:mi .26s ease both}
+@keyframes mi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.cm.user{align-items:flex-end}
+.cm.ai{align-items:flex-start}
+.cm-b{max-width:92%;padding:9px 13px;border-radius:10px;font-size:.84rem;line-height:1.65}
+.cm.user .cm-b{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.22);border-bottom-right-radius:2px}
+.cm.ai .cm-b{background:var(--dark3);border:1px solid rgba(255,255,255,.05);border-bottom-left-radius:2px}
+.cm-t{font-size:.6rem;color:var(--txt3);padding:0 4px}
+.typing-b{display:flex;align-items:center;gap:4px;padding:9px 13px;
+  background:var(--dark3);border-radius:10px;border-bottom-left-radius:2px;
+  border:1px solid rgba(255,255,255,.05);width:fit-content}
+.typing-b span{width:5px;height:5px;border-radius:50%;background:var(--c,var(--gold));animation:td 1.4s infinite}
+.typing-b span:nth-child(2){animation-delay:.22s}.typing-b span:nth-child(3){animation-delay:.44s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}}
+.chat-input-area{padding:12px;border-top:1px solid rgba(255,255,255,.06);background:var(--dark3);flex-shrink:0}
+.chat-wrap{display:flex;gap:8px;align-items:flex-end;
+  background:var(--dark4);border:1px solid rgba(201,168,76,.12);border-radius:10px;
+  padding:7px 10px;transition:border-color .2s}
+.chat-wrap:focus-within{border-color:rgba(201,168,76,.4)}
+.chat-ta{flex:1;background:transparent;border:none;color:var(--txt);
+  font-family:'Crimson Pro',serif;font-size:.9rem;line-height:1.5;
+  resize:none;outline:none;max-height:90px;min-height:22px}
+.chat-ta::placeholder{color:var(--txt3);font-style:italic}
+.chat-send{width:32px;height:32px;border-radius:7px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--c,var(--gold)),#e8c97a);
+  border:none;cursor:pointer;font-size:14px;color:#07070d;font-weight:700;
+  display:flex;align-items:center;justify-content:center;transition:all .2s}
+.chat-send:hover{transform:scale(1.1)}
+.chat-send:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.chat-hint{font-size:.63rem;color:var(--txt3);text-align:center;margin-top:7px;font-style:italic}
+/* UI Elements agent render uchun */
+.ui-card{background:var(--dark3);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;margin-bottom:12px}
+.ui-card h3{font-family:'Cinzel',serif;font-size:.85rem;color:var(--c,var(--gold));margin-bottom:8px;letter-spacing:.06em}
+.ui-card p{font-size:.82rem;color:var(--txt2);line-height:1.65}
+.ui-code{background:#0a0a0f;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:14px;
+  font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a8d8a8;line-height:1.6;
+  overflow-x:auto;margin:8px 0;white-space:pre}
+.ui-btn{display:inline-block;padding:8px 18px;border-radius:8px;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.08em;
+  background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.25);
+  transition:all .2s;margin:4px}
+.ui-btn:hover{background:rgba(201,168,76,.22)}
+.ui-video{width:100%;aspect-ratio:16/9;border-radius:10px;border:1px solid rgba(255,255,255,.08);margin:8px 0}
+.ui-input{width:100%;padding:10px 13px;background:var(--dark4);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;color:var(--txt);font-family:'Crimson Pro',serif;font-size:.88rem;outline:none;margin:4px 0}
+.ui-input:focus{border-color:var(--c,rgba(201,168,76,.5))}
+</style>
+</head>
+<body>
+<div class="room-hdr">
+  <div class="room-hdr-icon">${escaped.icon}</div>
+  <div>
+    <div class="room-hdr-name">${agent.name}</div>
+    <div class="room-hdr-desc">${agent.description || ''}</div>
+  </div>
+  <div class="room-hdr-badge">AGENT XONASI</div>
+</div>
+<div class="room-body">
+  <div class="room-left">
+    <div class="room-left-content" id="leftContent">
+      <div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,.15)">
+        <div style="font-size:3rem;margin-bottom:12px">${escaped.icon}</div>
+        <div style="font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:.15em">AGENT TAYYOR</div>
+        <div style="font-size:.78rem;margin-top:8px;font-style:italic">Chat orqali buyruq bering — men bu yerda ko'rsataman</div>
+      </div>
+    </div>
+  </div>
+  <div class="room-right">
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-input-area">
+      <div class="chat-wrap">
+        <textarea class="chat-ta" id="chatTa" placeholder="Buyruq bering..." rows="1"></textarea>
+        <button class="chat-send" id="chatSendBtn" onclick="sendMsg()">↑</button>
+      </div>
+      <div class="chat-hint">Enter — yuborish · Shift+Enter — qator</div>
+    </div>
+  </div>
+</div>
+<script>
+const AGENT = {
+  name: '${escaped.name}',
+  icon: '${escaped.icon}',
+  systemPrompt: \`${escaped.sys}\`,
+  key: '${S.key}',
+  model: '${S.model}',
+};
+const chatHistory = [];
+let busy = false;
+
+function ts() {
+  const n = new Date();
+  return n.getHours()+':'+String(n.getMinutes()).padStart(2,'0');
 }
 
-function toggleAgentStatus(id) {
-    const agent = localAgents.find(a => a.id === id);
-    if(agent) {
-        agent.active = !agent.active;
-        renderLandingCarousel();
-        renderManagementTable();
+function addMsg(role, text) {
+  const box = document.getElementById('chatMsgs');
+  const d = document.createElement('div');
+  d.className = 'cm '+role;
+  const safe = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\\n/g,'<br>')
+    .replace(/\\*\\*(.*?)\\*\\*/g,'<b>$1</b>')
+    .replace(/\`([^\`]+)\`/g,'<code style="background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-family:monospace;font-size:.8em">$1</code>');
+  d.innerHTML = \`<div class="cm-b">\${safe}</div><div class="cm-t">\${ts()}</div>\`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('chatMsgs');
+  const d = document.createElement('div');
+  d.className = 'cm ai'; d.id = 'typ';
+  d.innerHTML = '<div class="typing-b"><span></span><span></span><span></span></div>';
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+function hideTyping() { const t=document.getElementById('typ'); if(t)t.remove(); }
+
+// Agent javobini LEFT panelda render qilish
+function renderLeft(text) {
+  const content = document.getElementById('leftContent');
+  // ```ui ... ``` blokini qidiradi
+  const uiMatch = text.match(/\`\`\`ui([\\s\\S]*?)\`\`\`/);
+  if (uiMatch) {
+    try {
+      content.innerHTML = uiMatch[1];
+    } catch(e) {}
+  }
+  // ```html ... ``` bloki
+  const htmlMatch = text.match(/\`\`\`html([\\s\\S]*?)\`\`\`/);
+  if (htmlMatch) {
+    content.innerHTML = htmlMatch[1];
+  }
+}
+
+async function sendMsg() {
+  if (busy) return;
+  const ta = document.getElementById('chatTa');
+  const text = ta.value.trim();
+  if (!text) return;
+  ta.value = ''; ta.style.height='auto';
+  addMsg('user', text);
+  chatHistory.push({role:'user', content:text});
+  busy = true;
+  document.getElementById('chatSendBtn').disabled = true;
+  showTyping();
+
+  const sysPrompt = AGENT.systemPrompt + \`
+
+=== LEFT PANEL RENDER ===
+Agar foydalanuvchi biror narsa ko'rsatishni so'rasa, javobingning oxirida quyidagi formatda LEFT panelga HTML yoz:
+\\\`\\\`\\\`html
+<div style="padding:20px">
+  <!-- bu yerda to'liq HTML kontent -->
+</div>
+\\\`\\\`\\\`
+Bu blok avtomatik LEFT panelda ko'rinadi.
+Agar video ko'rsatish kerak bo'lsa, YouTube embed ishlat:
+\\\`\\\`\\\`html
+<iframe class="ui-video" src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe>
+\\\`\\\`\\\`
+Qidirish uchun: https://www.youtube.com/results?search_query=... linkini ber.
+\`;
+
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+AGENT.key,
+        'HTTP-Referer':'https://qirollik.app',
+        'X-Title':'Qirollik'
+      },
+      body: JSON.stringify({
+        model: AGENT.model,
+        max_tokens: 2000,
+        messages: [
+          {role:'system', content:sysPrompt},
+          ...chatHistory.slice(-14)
+        ]
+      })
+    });
+    const data = await res.json();
+    hideTyping();
+    if (data.error) {
+      addMsg('ai','❌ '+data.error.message);
+    } else {
+      const reply = data.choices[0].message.content;
+      chatHistory.push({role:'assistant', content:reply});
+      // Chat uchun UI bloklarini olib tashlaydi
+      const displayText = reply.replace(/\`\`\`(html|ui)[\\s\\S]*?\`\`\`/g,'[Panel yangilandi ✓]').trim();
+      addMsg('ai', displayText);
+      renderLeft(reply);
     }
+  } catch(e) {
+    hideTyping();
+    addMsg('ai','❌ Ulanish xatosi.');
+  }
+  busy = false;
+  document.getElementById('chatSendBtn').disabled = false;
 }
 
-function logActionToFirebaseMock(user, agentName) {
-    const tbody = document.getElementById('logTable').querySelector('tbody');
-    const tr = document.createElement('tr');
-    const now = new Date();
-    const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-    tr.innerHTML = `<td>${user}</td><td>${agentName}</td><td>${timeStr}</td>`;
-    tbody.insertBefore(tr, tbody.firstChild);
-}
+// Keyboard
+document.getElementById('chatTa').addEventListener('keydown', e => {
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+document.getElementById('chatTa').addEventListener('input', function() {
+  this.style.height='auto';
+  this.style.height=Math.min(this.scrollHeight,90)+'px';
+});
 
-// 6. SCREEN ROUTER CONTROLLER
-function switchScreen(screenName) {
-    // Barcha ekranlarni yopish
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    
-    if(screenName === 'landing') {
-        document.getElementById('scrLanding').classList.add('active-screen');
-        document.getElementById('nav-landing').classList.add('active');
-    } else if(screenName === 'workspace') {
-        document.getElementById('scrWorkspace').classList.add('active-screen');
-    } else if(screenName === 'qirolPanel') {
-        document.getElementById('scrQirolPanel').classList.add('active-screen');
-        document.getElementById('nav-panel').classList.add('active');
+// Kirish xabari
+window.onload = () => {
+  addMsg('ai', 'Salom! Men ' + AGENT.name + '. Tayyor turaman — buyruq bering.');
+};
+<\/script>
+</body>
+</html>`;
+  }
+};
+
+// ═══════════════════════════════
+//  KING — Qirol chat logikasi
+// ═══════════════════════════════
+const K = {
+  greet() {
+    K.addMsg('king',
+      'Assalomu alaykum. 👑\n\nMen Qirol — imperiyangiz hukmdori.\n\nBuyruq bering — men agent yarataman, xona ochaman, hamma narsani real vaqtda qilaman.\n\nMasalan:\n• "Kod yozish uchun agent yarat"\n• "Sport ustoz kerak"\n• "SAP mutaxassisi qo\'sh"\n• "Matematika o\'qituvchisi"'
+    );
+  },
+
+  addMsg(role, text) {
+    const box = document.getElementById('msgs');
+    const d = document.createElement('div');
+    d.className = 'msg ' + role;
+    const safe = text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\n/g,'<br>')
+      .replace(/\*\*(.*?)\*\*/g,'<b>$1</b>');
+    const t = new Date();
+    const tStr = t.getHours()+':'+String(t.getMinutes()).padStart(2,'0');
+    d.innerHTML = `<div class="msg-bubble">${safe}</div><div class="msg-time">${tStr}</div>`;
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+  },
+
+  addAgentTag(agent) {
+    // Qirol messajidan keyin agent tugmasi
+    const box = document.getElementById('msgs');
+    const last = box.lastElementChild;
+    if (!last) return;
+    const bubble = last.querySelector('.msg-bubble');
+    if (!bubble) return;
+    const tag = document.createElement('div');
+    tag.className = 'agent-tag';
+    tag.innerHTML = `${agent.icon} ${agent.name} xonasiga kirish →`;
+    tag.onclick = () => W.openRoom(agent);
+    bubble.appendChild(document.createElement('br'));
+    bubble.appendChild(tag);
+  },
+
+  showTyping() {
+    const box = document.getElementById('msgs');
+    const d = document.createElement('div');
+    d.className = 'msg king'; d.id = 'ktyp';
+    d.innerHTML = '<div class="typing-box"><span></span><span></span><span></span></div>';
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+  },
+  hideTyping() { const t=document.getElementById('ktyp'); if(t)t.remove(); },
+
+  async send() {
+    if (S.busy) return;
+    const ta = document.getElementById('ta');
+    const text = ta.value.trim();
+    if (!text) return;
+    ta.value = ''; ta.style.height = 'auto';
+    K.addMsg('user', text);
+    S.history.push({role:'user', content:text});
+    S.busy = true;
+    document.getElementById('sendBtn').disabled = true;
+    K.showTyping();
+
+    // Qirol system prompt — agentlarni yaratishni biladi
+    const existingAgents = S.agents.map(a=>`${a.icon} ${a.name} (${a.type})`).join(', ') || 'hozircha yo\'q';
+    const sysPrompt = `Sen "QIROL" — foydalanuvchining shaxsiy AI imperiya hukmdorisiz. O'zbek tilida gapirasan.
+
+=== VAZIFANG ===
+Foydalanuvchi agent yaratishni so'rasa, DARHOL JSON formatida agent yaratasan.
+Boshqa savollarga ham javob berasan — lekin agent yaratish asosiy vazifang.
+
+=== MAVJUD AGENTLAR ===
+${existingAgents}
+
+=== AGENT YARATISH FORMATI ===
+Agar agent yaratish kerak bo'lsa, javobingda bu JSON blokni qo'sh:
+
+\`\`\`agent
+{
+  "id": "uniq_id_${Date.now()}",
+  "name": "Agent Nomi",
+  "icon": "🤖",
+  "color": "#hex_rang",
+  "type": "agent_turi",
+  "description": "Qisqa tavsif (1 jumla)",
+  "systemPrompt": "Sen ... yordamchisisiz. ... [batafsil system prompt]"
+}
+\`\`\`
+
+=== QOIDALAR ===
+- Agent yaratilganda foydalanuvchiga xabar ber
+- System prompt juda batafsil yoz — agent o'sha xonada ishlaydi
+- Sport agenti uchun: kunlik mashq, video link, motivatsiya kiritgin
+- Kod agenti uchun: kod yozish, debug, HTML/CSS/JS, LEFT panelda preview ko'rsatish
+- Kamgap, aniq, kuchli gapir — Qirol uslubida
+- Har doim o'zbek tilida`;
+
+    try {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+S.key,
+          'HTTP-Referer':'https://qirollik.app',
+          'X-Title':'Qirollik'
+        },
+        body: JSON.stringify({
+          model: S.model,
+          max_tokens: 1800,
+          messages: [
+            {role:'system', content:sysPrompt},
+            ...S.history.slice(-12)
+          ]
+        })
+      });
+
+      const data = await res.json();
+      K.hideTyping();
+
+      if (data.error) {
+        K.addMsg('king','❌ Xato: '+data.error.message);
+      } else {
+        const reply = data.choices[0].message.content;
+        S.history.push({role:'assistant', content:reply});
+
+        // Agent JSON ni parse qil
+        const agentMatch = reply.match(/```agent\n([\s\S]*?)```/);
+        let displayText = reply.replace(/```agent\n[\s\S]*?```/g,'').trim();
+
+        if (agentMatch) {
+          try {
+            const agentData = JSON.parse(agentMatch[1]);
+            W.addAgent(agentData);
+            K.addMsg('king', displayText || `✅ "${agentData.name}" yaratildi va imperiyaga qo'shildi.`);
+            K.addAgentTag(agentData);
+          } catch(e) {
+            K.addMsg('king', displayText || reply);
+          }
+        } else {
+          K.addMsg('king', displayText || reply);
+        }
+      }
+    } catch(e) {
+      K.hideTyping();
+      K.addMsg('king','❌ Ulanish xatosi. API kalitni tekshiring.');
     }
-}
 
-// Enter bosilganda chatni yuborish hodisasi
-document.getElementById('chatInput').addEventListener('keydown', function(e) {
-    if(e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        executeChatSend();
-    }
+    S.busy = false;
+    document.getElementById('sendBtn').disabled = false;
+  }
+};
+
+// ═══════════════════════════════
+//  INPUT HANDLERS
+// ═══════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  const ta = document.getElementById('ta');
+  ta.addEventListener('keydown', e => {
+    if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); K.send(); }
+  });
+  ta.addEventListener('input', function() {
+    this.style.height='auto';
+    this.style.height=Math.min(this.scrollHeight,90)+'px';
+  });
+
+  // Gate: Enter
+  document.getElementById('keyInput').addEventListener('keydown', e => {
+    if (e.key==='Enter') G.start();
+  });
+
+  // sessionStorage dan kalit
+  const savedKey = sessionStorage.getItem('qk');
+  const savedModel = sessionStorage.getItem('qm');
+  if (savedKey) {
+    document.getElementById('keyInput').value = savedKey;
+    if (savedModel) document.getElementById('modelSel').value = savedModel;
+  }
 });
 </script>
 </body>
