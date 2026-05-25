@@ -3,661 +3,932 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QIROLLIK</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<title>Ustoz — Boss</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Unbounded:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --gold:#c9a84c;--gold2:#e8c97a;
-  --dark:#07070d;--dark2:#0e0e18;--dark3:#161624;--dark4:#1e1e30;
-  --txt:#ede8df;--txt2:#9a9080;--txt3:#5a5040;
-  --green:#4ecb71;--red:#e05555;
-}
-html,body{height:100%;background:var(--dark);color:var(--txt);font-family:'Crimson Pro',serif;overflow:hidden}
-#gate{
-  position:fixed;inset:0;background:var(--dark);
-  display:flex;align-items:center;justify-content:center;z-index:999;
-  transition:opacity .5s;
-}
-#gate.hide{opacity:0;pointer-events:none}
-.gate-box{
-  background:var(--dark3);border:1px solid rgba(201,168,76,.28);border-radius:22px;
-  padding:50px 42px;text-align:center;width:370px;
-  box-shadow:0 40px 100px rgba(0,0,0,.7);
-}
-.gate-crown{font-size:3.8rem;display:block;margin-bottom:18px;
-  filter:drop-shadow(0 0 22px rgba(201,168,76,.5));
-  animation:crownpls 3s ease-in-out infinite}
-@keyframes crownpls{
-  0%,100%{filter:drop-shadow(0 0 22px rgba(201,168,76,.5))}
-  50%{filter:drop-shadow(0 0 40px rgba(201,168,76,.9))}
-}
-.gate-box h1{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold);letter-spacing:.18em;margin-bottom:6px}
-.gate-box p{font-size:.8rem;color:var(--txt3);font-style:italic;margin-bottom:30px;line-height:1.7}
-.gate-input,.gate-select{
-  width:100%;padding:13px 16px;margin-bottom:12px;
-  background:var(--dark4);border:1px solid rgba(201,168,76,.14);border-radius:11px;
-  color:var(--txt);font-family:'Crimson Pro',serif;font-size:.9rem;outline:none;
-  transition:border-color .2s;
-}
-.gate-input:focus,.gate-select:focus{border-color:rgba(201,168,76,.55)}
-.gate-select option{background:var(--dark4)}
-.gate-btn{
-  width:100%;padding:14px;margin-top:4px;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  border:none;border-radius:11px;
-  font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;letter-spacing:.12em;
-  color:var(--dark);cursor:pointer;transition:all .25s;
-}
-.gate-btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(201,168,76,.35)}
-.gate-err{font-size:.74rem;color:var(--red);margin-top:10px;min-height:16px;font-style:italic}
-#app{display:none;height:100vh;flex-direction:column}
-#app.on{display:flex}
-.hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 26px;height:54px;flex-shrink:0;
-  background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.1);position:relative;
-}
-.hdr::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(201,168,76,.25),transparent)}
-.hdr-logo{display:flex;align-items:center;gap:10px;font-family:'Cinzel',serif;
-  font-size:1.05rem;color:var(--gold);letter-spacing:.18em}
-.hdr-crown{font-size:1.25rem;filter:drop-shadow(0 0 8px rgba(201,168,76,.6))}
-.hdr-right{display:flex;align-items:center;gap:14px;font-size:.72rem;color:var(--txt3)}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);
-  box-shadow:0 0 8px var(--green);animation:pls 2s infinite;display:inline-block}
-@keyframes pls{0%,100%{opacity:1}50%{opacity:.2}}
-.layout{display:flex;flex:1;overflow:hidden}
-.world{flex:1;position:relative;overflow:hidden;background:var(--dark)}
-.world-grid{
-  position:absolute;inset:0;pointer-events:none;
-  background-image:linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px);
-  background-size:50px 50px;
-}
-.world-glow{
-  position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(201,168,76,.03),transparent);
-}
-#worldEmpty{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  text-align:center;pointer-events:none;transition:opacity .4s;
-}
-#worldEmpty h2{font-family:'Cinzel',serif;font-size:1.7rem;color:rgba(201,168,76,.07);letter-spacing:.3em}
-#worldEmpty p{font-size:.78rem;color:rgba(160,144,112,.18);font-style:italic;margin-top:8px}
-.agent-card{
-  position:absolute;background:var(--dark3);border:1px solid rgba(201,168,76,.18);
-  border-radius:14px;padding:16px 18px;min-width:150px;cursor:pointer;
-  transition:all .3s ease;animation:cardIn .55s cubic-bezier(.34,1.45,.64,1) both;
-}
-@keyframes cardIn{from{opacity:0;transform:scale(.6) translateY(40px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.agent-card:hover{border-color:rgba(201,168,76,.5);transform:translateY(-5px);
-  box-shadow:0 15px 40px rgba(0,0,0,.5),0 0 25px rgba(201,168,76,.08);}
-.ac-icon{font-size:2rem;margin-bottom:8px;display:block}
-.ac-name{font-family:'Cinzel',serif;font-size:.74rem;color:var(--gold);letter-spacing:.09em;text-transform:uppercase}
-.ac-type{font-size:.68rem;color:var(--txt3);font-style:italic;margin-top:3px}
-.ac-live{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:.63rem;color:var(--txt3)}
-.ac-livdot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)}
-.ac-open{display:block;margin-top:10px;text-align:center;font-family:'Cinzel',serif;
-  font-size:.6rem;letter-spacing:.08em;color:rgba(201,168,76,.6);
-  border-top:1px solid rgba(201,168,76,.1);padding-top:8px;transition:color .2s;}
-.agent-card:hover .ac-open{color:var(--gold)}
-.king-panel{width:375px;flex-shrink:0;display:flex;flex-direction:column;
-  background:var(--dark2);border-left:1px solid rgba(201,168,76,.1);}
-.kp-head{padding:14px 18px;border-bottom:1px solid rgba(201,168,76,.07);
-  background:var(--dark3);flex-shrink:0;display:flex;align-items:center;gap:11px;}
-.kp-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,#8a6520,var(--gold));
-  display:flex;align-items:center;justify-content:center;font-size:1.15rem;
-  box-shadow:0 0 16px rgba(201,168,76,.28);}
-.kp-name{font-family:'Cinzel',serif;font-size:.88rem;color:var(--gold)}
-.kp-sub{font-size:.67rem;color:var(--txt3);font-style:italic;margin-top:2px}
-.kp-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.kp-msgs::-webkit-scrollbar{width:3px}
-.kp-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.12);border-radius:2px}
-.msg{display:flex;flex-direction:column;gap:3px;animation:mi .28s ease both}
-@keyframes mi{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-.msg.user{align-items:flex-end}.msg.king{align-items:flex-start}
-.msg-bubble{max-width:91%;padding:9px 13px;border-radius:10px;font-size:.84rem;line-height:1.65}
-.msg.user .msg-bubble{background:linear-gradient(135deg,rgba(201,168,76,.17),rgba(201,168,76,.07));
-  border:1px solid rgba(201,168,76,.22);border-bottom-right-radius:2px;}
-.msg.king .msg-bubble{background:var(--dark3);border:1px solid rgba(255,255,255,.05);border-bottom-left-radius:2px;}
-.msg-time{font-size:.6rem;color:var(--txt3);padding:0 4px}
-.agent-tag{display:inline-flex;align-items:center;gap:6px;margin-top:6px;
-  padding:5px 12px;border-radius:999px;font-family:'Cinzel',serif;font-size:.67rem;letter-spacing:.06em;
-  background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.3);
-  cursor:pointer;transition:all .2s;}
-.agent-tag:hover{background:rgba(201,168,76,.22);transform:translateX(3px)}
-.typing-box{display:flex;align-items:center;gap:4px;padding:9px 13px;
-  background:var(--dark3);border-radius:10px;border-bottom-left-radius:2px;
-  border:1px solid rgba(255,255,255,.05);width:fit-content;}
-.typing-box span{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:td 1.4s infinite}
-.typing-box span:nth-child(2){animation-delay:.22s}
-.typing-box span:nth-child(3){animation-delay:.44s}
-@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}}
-.kp-input-area{padding:12px;border-top:1px solid rgba(201,168,76,.08);background:var(--dark3);flex-shrink:0}
-.kp-wrap{display:flex;gap:8px;align-items:flex-end;background:var(--dark4);
-  border:1px solid rgba(201,168,76,.13);border-radius:10px;padding:7px 10px;transition:border-color .2s;}
-.kp-wrap:focus-within{border-color:rgba(201,168,76,.42)}
-.kp-ta{flex:1;background:transparent;border:none;color:var(--txt);
-  font-family:'Crimson Pro',serif;font-size:.9rem;line-height:1.5;
-  resize:none;outline:none;max-height:90px;min-height:22px;}
-.kp-ta::placeholder{color:var(--txt3);font-style:italic}
-.kp-send{width:32px;height:32px;border-radius:7px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  border:none;cursor:pointer;font-size:14px;color:var(--dark);font-weight:700;
-  display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.kp-send:hover{transform:scale(1.1);box-shadow:0 4px 16px rgba(201,168,76,.35)}
-.kp-send:disabled{opacity:.3;cursor:not-allowed;transform:none}
-.kp-hint{font-size:.64rem;color:var(--txt3);text-align:center;margin-top:7px;font-style:italic}
-.notif{position:fixed;bottom:22px;left:50%;
-  transform:translateX(-50%) translateY(80px);
-  background:var(--dark3);border:1px solid rgba(201,168,76,.3);border-radius:10px;
-  padding:9px 20px;font-size:.8rem;color:var(--gold);font-style:italic;
-  z-index:500;transition:transform .4s cubic-bezier(.34,1.4,.64,1);pointer-events:none;}
-.notif.show{transform:translateX(-50%) translateY(0)}
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #7c6aff;
+    --accent2: #ff6a9e;
+    --text: #e8e8f0;
+    --text2: #8888aa;
+    --text3: #4a4a6a;
+    --success: #4aff9e;
+    --mono: 'Space Mono', monospace;
+    --display: 'Unbounded', sans-serif;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Grid bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Header */
+  header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo span {
+    font-weight: 300;
+    opacity: 0.6;
+  }
+
+  .api-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .api-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .api-btn.connected { border-color: var(--success); color: var(--success); }
+
+  /* Layout */
+  .main {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 61px);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 280px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: rgba(18,18,26,0.7);
+    backdrop-filter: blur(8px);
+    flex-shrink: 0;
+  }
+
+  .sidebar-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-title {
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .new-agent-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .new-agent-btn:hover { opacity: 0.8; }
+
+  .agents-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .agent-item {
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .agent-item:hover { background: var(--surface2); border-color: var(--border); }
+  .agent-item.active { background: var(--surface2); border-color: var(--accent); }
+
+  .agent-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .agent-icon.boss { background: linear-gradient(135deg, #7c6aff22, #ff6a9e22); border: 1px solid var(--accent); }
+  .agent-icon.custom { background: var(--surface); border: 1px solid var(--border); }
+
+  .agent-info { flex: 1; min-width: 0; }
+  .agent-name { font-size: 13px; font-weight: 700; truncate; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .agent-desc { font-size: 11px; color: var(--text3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .agent-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-boss { background: #7c6aff22; color: var(--accent); border: 1px solid #7c6aff44; }
+  .badge-agent { background: #ff6a9e22; color: var(--accent2); border: 1px solid #ff6a9e44; }
+
+  /* Chat area */
+  .chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .chat-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(10,10,15,0.8);
+  }
+
+  .chat-agent-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: linear-gradient(135deg, #7c6aff22, #ff6a9e22);
+    border: 1px solid var(--accent);
+  }
+
+  .chat-agent-info h2 {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .chat-agent-info p { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Welcome screen */
+  .welcome {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .welcome-logo {
+    font-family: var(--display);
+    font-size: 48px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+
+  .welcome-sub {
+    font-size: 13px;
+    color: var(--text2);
+    max-width: 400px;
+    line-height: 1.6;
+  }
+
+  .welcome-hint {
+    margin-top: 8px;
+    padding: 12px 20px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: var(--text3);
+    max-width: 440px;
+    line-height: 1.8;
+  }
+
+  /* Messages */
+  .msg {
+    display: flex;
+    gap: 10px;
+    animation: fadeIn 0.3s ease;
+    max-width: 800px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
+
+  .msg-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .msg.user .msg-avatar { background: var(--surface2); border: 1px solid var(--border); }
+  .msg.ai .msg-avatar { background: linear-gradient(135deg, #7c6aff22, #ff6a9e22); border: 1px solid var(--accent); }
+
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    line-height: 1.65;
+    font-size: 13.5px;
+    max-width: 600px;
+  }
+
+  .msg.user .msg-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-top-right-radius: 4px;
+  }
+
+  .msg.ai .msg-bubble {
+    background: rgba(124,106,255,0.08);
+    border: 1px solid rgba(124,106,255,0.2);
+    border-top-left-radius: 4px;
+  }
+
+  /* Agent card in message */
+  .agent-card {
+    margin-top: 12px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .agent-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .agent-card-info { flex: 1; }
+  .agent-card-name { font-weight: 700; font-size: 13px; }
+  .agent-card-desc { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+
+  .open-agent-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .open-agent-btn:hover { opacity: 0.8; }
+
+  /* Typing indicator */
+  .typing { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+  .typing span {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: bounce 1.2s ease infinite;
+    opacity: 0.6;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%,60%,100% { transform: translateY(0); opacity: 0.6; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* Input */
+  .chat-input-area {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(12px);
+  }
+
+  .input-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    transition: border-color 0.2s;
+  }
+
+  .input-wrapper:focus-within { border-color: var(--accent); }
+
+  textarea {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13.5px;
+    resize: none;
+    line-height: 1.5;
+    max-height: 120px;
+    min-height: 20px;
+  }
+
+  textarea::placeholder { color: var(--text3); }
+
+  .send-btn {
+    background: var(--accent);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+    font-size: 14px;
+  }
+
+  .send-btn:hover:not(:disabled) { opacity: 0.8; }
+  .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 420px;
+    max-width: 90vw;
+  }
+
+  .modal h3 {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .modal p { font-size: 12px; color: var(--text2); margin-bottom: 20px; line-height: 1.6; }
+
+  .modal input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .modal input:focus { border-color: var(--accent); }
+
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .btn-cancel {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover { border-color: var(--text2); color: var(--text); }
+
+  .btn-save {
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-save:hover { opacity: 0.8; }
+
+  /* Prose formatting */
+  .msg-bubble p { margin-bottom: 8px; }
+  .msg-bubble p:last-child { margin-bottom: 0; }
+  .msg-bubble strong { color: var(--accent); }
+  .msg-bubble ul { padding-left: 16px; margin: 8px 0; }
+  .msg-bubble li { margin-bottom: 4px; }
+
+  /* Scrollbar */
+  .agents-list::-webkit-scrollbar { width: 3px; }
+  .agents-list::-webkit-scrollbar-track { background: transparent; }
+  .agents-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  @media (max-width: 600px) {
+    .sidebar { width: 220px; }
+    .chat-messages { padding: 16px; }
+  }
 </style>
 </head>
 <body>
 
-<div id="gate">
-  <div class="gate-box">
-    <span class="gate-crown">👑</span>
-    <h1>QIROLLIK</h1>
-    <p>OpenRouter API kalitini kiriting.<br>Qirol uyg'onadi — imperiya boshlaydi.</p>
-    <input class="gate-input" type="password" id="keyInput" placeholder="sk-or-v1-...">
-    <select class="gate-select" id="modelSel">
-      <option value="anthropic/claude-3-5-sonnet-20241022">Claude Sonnet 3.5 — Kuchli</option>
-      <option value="anthropic/claude-3-haiku-20240307">Claude Haiku 3 — Tez</option>
-      <option value="anthropic/claude-sonnet-4-5">Claude Sonnet 4.5</option>
-    </select>
-    <button class="gate-btn" onclick="startEmpire()">&#9889; Qirolni Uyg'otish</button>
-    <div class="gate-err" id="gateErr"></div>
-  </div>
-</div>
+<header>
+  <div class="logo">USTOZ <span>/ boss</span></div>
+  <button class="api-btn" id="apiBtn" onclick="openApiModal()">
+    <span id="apiDot">⬤</span>
+    <span id="apiLabel">API kaliti kiriting</span>
+  </button>
+</header>
 
-<div id="app">
-  <header class="hdr">
-    <div class="hdr-logo">
-      <span class="hdr-crown">&#128081;</span>
-      QIROLLIK
+<div class="main">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Agentlar</span>
+      <button class="new-agent-btn" onclick="requestNewAgent()">+ Yangi</button>
     </div>
-    <div class="hdr-right">
-      <span class="live-dot"></span>
-      <span id="hdrModel" style="font-style:italic"></span>
-    </div>
-  </header>
-  <div class="layout">
-    <div class="world" id="world">
-      <div class="world-grid"></div>
-      <div class="world-glow"></div>
-      <div id="worldEmpty">
-        <h2>BO'SH QIROLLIK</h2>
-        <p>Qirolga buyruq bering — agentlar paydo bo'ladi</p>
-      </div>
-    </div>
-    <div class="king-panel">
-      <div class="kp-head">
-        <div class="kp-avatar">&#128081;</div>
-        <div>
-          <div class="kp-name">QIROL</div>
-          <div class="kp-sub">Sizning shaxsiy AI hukmdoringiz</div>
+    <div class="agents-list" id="agentsList">
+      <!-- Boss -->
+      <div class="agent-item active" id="agent-boss" onclick="switchAgent('boss')">
+        <div class="agent-icon boss">🎯</div>
+        <div class="agent-info">
+          <div class="agent-name">Boss</div>
+          <div class="agent-desc">Agentlarni boshqaradi</div>
         </div>
-      </div>
-      <div class="kp-msgs" id="msgs"></div>
-      <div class="kp-input-area">
-        <div class="kp-wrap">
-          <textarea class="kp-ta" id="ta" placeholder="Qirolga buyruq bering..." rows="1"></textarea>
-          <button class="kp-send" id="sendBtn" onclick="kingSend()">&#8593;</button>
-        </div>
-        <div class="kp-hint">Enter — yuborish &nbsp;&#183;&nbsp; Shift+Enter — yangi qator</div>
+        <span class="agent-badge badge-boss">BOSS</span>
       </div>
     </div>
   </div>
+
+  <!-- Chat -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <div class="chat-agent-icon" id="chatIcon">🎯</div>
+      <div class="chat-agent-info">
+        <h2 id="chatName">Boss</h2>
+        <p id="chatDesc">Agentlarni yaratadi va boshqaradi</p>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="welcome" id="welcomeScreen">
+        <div class="welcome-logo">USTOZ</div>
+        <div class="welcome-sub">
+          Siz bilan ishlash uchun maxsus agentlar yaratadigan aqlli platforma.
+        </div>
+        <div class="welcome-hint">
+          💡 Misol: <em>"Menga rus tili o'rgatadigan ustoz kerak"</em><br>
+          💡 Misol: <em>"Sport va mashq bo'yicha mutaxassis kerak"</em><br>
+          💡 Misol: <em>"Matematika bo'yicha agent yaratib ber"</em>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="input-wrapper">
+        <textarea
+          id="msgInput"
+          placeholder="Boss bilan yozing... (Enter — yuborish, Shift+Enter — yangi qator)"
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">↑</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="notif" id="notif"></div>
+<!-- API Modal -->
+<div class="modal-overlay" id="apiModal" style="display:none">
+  <div class="modal">
+    <h3>🔑 API Kaliti</h3>
+    <p>Claude API kalitingizni kiriting. U faqat brauzeringizda saqlanadi, hech qayerga yuborilmaydi.<br><br>
+    Kalit olish: <strong>console.anthropic.com</strong> → API Keys</p>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeApiModal()">Bekor</button>
+      <button class="btn-save" onclick="saveApiKey()">Saqlash</button>
+    </div>
+  </div>
+</div>
 
 <script>
-var API_KEY = '';
-var API_MODEL = '';
-var AGENTS = [];
-var KING_HIST = [];
-var KING_BUSY = false;
-var POSITIONS = [
-  {x:60,y:70},{x:270,y:55},{x:470,y:80},{x:670,y:65},
-  {x:80,y:255},{x:285,y:240},{x:485,y:265},{x:685,y:248},
-  {x:100,y:415},{x:305,y:400},{x:505,y:425}
-];
-var POS_IDX = 0;
+// ─── State ───────────────────────────────────────────────
+let apiKey = localStorage.getItem('ustoz_api_key') || '';
+let activeAgent = 'boss';
+let agents = {
+  boss: {
+    id: 'boss',
+    name: 'Boss',
+    icon: '🎯',
+    desc: 'Agentlarni yaratadi va boshqaradi',
+    type: 'boss',
+    history: [],
+    systemPrompt: `Sen "Ustoz" platformasining Boss agentisan. Sening asosiy vazifang — foydalanuvchi so'rovini tahlil qilib, ularga mos mutaxassis agent yaratish.
 
-function startEmpire() {
-  var k = document.getElementById('keyInput').value.trim();
-  var m = document.getElementById('modelSel').value;
-  if (!k || k.length < 15) {
-    document.getElementById('gateErr').textContent = 'API kalit noto\'g\'ri!';
+QOIDALAR:
+1. Foydalanuvchi biror sohada yordam so'raganda, darhol o'sha sohaga mos agent yaratishni taklif qil
+2. Agent yaratishda aniq nom, emoji va vazifa tavsifini berasan
+3. Agent yaratilgach, foydalanuvchiga agentga o'tishni taklif qilasan
+4. Foydalanuvchi boshqa qo'shimcha vazifa so'rasa, yangi agent yaratasanham
+
+AGENT YARATISH FORMATI:
+Har doim agent taklif qilganda quyidagi JSON formatida yoz (boshqa matn bilan birga):
+[AGENT_CREATE: {"name":"Agent nomi","icon":"emoji","desc":"Qisqa tavsif","system":"Bu agent...ning mutaxassisidir. [batafsil vazifa]"}]
+
+MUHIM: Agent yaratganda DOIM bu JSON formatni ishlatginasan. Faqat bitta agent taklif qil.
+
+Tillar: Asosan o'zbek tilida javob ber, lekin foydalanuvchi qaysi tilda yozsa shu tilda javob ber.`
+  }
+};
+
+// ─── Init ────────────────────────────────────────────────
+if (apiKey) updateApiBtn(true);
+
+// ─── API ─────────────────────────────────────────────────
+function openApiModal() {
+  document.getElementById('apiModal').style.display = 'flex';
+  document.getElementById('apiKeyInput').value = apiKey;
+  setTimeout(() => document.getElementById('apiKeyInput').focus(), 100);
+}
+
+function closeApiModal() {
+  document.getElementById('apiModal').style.display = 'none';
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    document.getElementById('apiKeyInput').style.borderColor = '#ff4466';
+    setTimeout(() => document.getElementById('apiKeyInput').style.borderColor = '', 1500);
     return;
   }
-  API_KEY = k;
-  API_MODEL = m;
-  sessionStorage.setItem('qk', k);
-  sessionStorage.setItem('qm', m);
-  document.getElementById('gate').classList.add('hide');
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('hdrModel').textContent = m.split('/').pop();
-  kingGreet();
+  apiKey = key;
+  localStorage.setItem('ustoz_api_key', key);
+  updateApiBtn(true);
+  closeApiModal();
 }
 
-function showNotif(t) {
-  var n = document.getElementById('notif');
-  n.textContent = t;
-  n.classList.add('show');
-  setTimeout(function() { n.classList.remove('show'); }, 2600);
+function updateApiBtn(connected) {
+  const btn = document.getElementById('apiBtn');
+  const dot = document.getElementById('apiDot');
+  const label = document.getElementById('apiLabel');
+  if (connected) {
+    btn.classList.add('connected');
+    dot.textContent = '⬤';
+    dot.style.color = 'var(--success)';
+    label.textContent = 'Ulangan';
+  } else {
+    btn.classList.remove('connected');
+    dot.style.color = '';
+    label.textContent = 'API kaliti kiriting';
+  }
 }
 
-function nowTime() {
-  var d = new Date();
-  return d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
+// ─── Agent management ─────────────────────────────────────
+function switchAgent(id) {
+  activeAgent = id;
+  document.querySelectorAll('.agent-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('agent-' + id)?.classList.add('active');
+
+  const ag = agents[id];
+  document.getElementById('chatIcon').textContent = ag.icon;
+  document.getElementById('chatName').textContent = ag.name;
+  document.getElementById('chatDesc').textContent = ag.desc;
+
+  renderMessages(id);
 }
 
-function safeHtml(text) {
+function renderMessages(id) {
+  const container = document.getElementById('chatMessages');
+  const ag = agents[id];
+
+  if (ag.history.length === 0) {
+    container.innerHTML = `<div class="welcome" id="welcomeScreen">
+      <div class="welcome-logo">USTOZ</div>
+      <div class="welcome-sub">Siz bilan ishlash uchun maxsus agentlar yaratadigan aqlli platforma.</div>
+      <div class="welcome-hint">
+        💡 Misol: <em>"Menga rus tili o'rgatadigan ustoz kerak"</em><br>
+        💡 Misol: <em>"Sport va mashq bo'yicha mutaxassis kerak"</em><br>
+        💡 Misol: <em>"Matematika bo'yicha agent yaratib ber"</em>
+      </div>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  ag.history.forEach(msg => {
+    if (msg.role === 'user') appendMsg('user', msg.content, false);
+    else appendMsg('ai', msg.content, false);
+  });
+  container.scrollTop = container.scrollHeight;
+}
+
+function requestNewAgent() {
+  switchAgent('boss');
+  document.getElementById('msgInput').value = '';
+  document.getElementById('msgInput').focus();
+  setTimeout(() => {
+    document.getElementById('msgInput').value = 'Menga yangi mutaxassis agent kerak: ';
+    autoResize(document.getElementById('msgInput'));
+    document.getElementById('msgInput').focus();
+  }, 100);
+}
+
+// ─── Messaging ───────────────────────────────────────────
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+async function sendMessage() {
+  if (!apiKey) { openApiModal(); return; }
+
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Hide welcome
+  const welcome = document.getElementById('welcomeScreen');
+  if (welcome) welcome.remove();
+
+  input.value = '';
+  autoResize(input);
+
+  const ag = agents[activeAgent];
+  ag.history.push({ role: 'user', content: text });
+  appendMsg('user', text, true);
+
+  const typingId = appendTyping();
+  document.getElementById('sendBtn').disabled = true;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: ag.systemPrompt,
+        messages: ag.history
+      })
+    });
+
+    const data = await res.json();
+    removeTyping(typingId);
+
+    if (data.error) throw new Error(data.error.message);
+
+    const reply = data.content[0].text;
+    ag.history.push({ role: 'assistant', content: reply });
+
+    // Check for agent creation
+    const agentMatch = reply.match(/\[AGENT_CREATE:\s*({.*?})\]/s);
+    const cleanReply = reply.replace(/\[AGENT_CREATE:\s*{.*?}\]/s, '').trim();
+
+    appendMsg('ai', cleanReply, true, agentMatch ? parseAgent(agentMatch[1]) : null);
+
+  } catch (err) {
+    removeTyping(typingId);
+    appendMsg('ai', `❌ Xatolik: ${err.message}`, true);
+  }
+
+  document.getElementById('sendBtn').disabled = false;
+}
+
+function parseAgent(jsonStr) {
+  try { return JSON.parse(jsonStr); } catch { return null; }
+}
+
+function appendMsg(role, text, animate, newAgent = null) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+
+  const avatar = role === 'user' ? '👤' : agents[activeAgent].icon;
+
+  let content = formatText(text);
+
+  if (newAgent) {
+    const agId = 'agent_' + Date.now();
+    content += `<div class="agent-card">
+      <div class="agent-card-icon">${newAgent.icon || '🤖'}</div>
+      <div class="agent-card-info">
+        <div class="agent-card-name">${newAgent.name}</div>
+        <div class="agent-card-desc">${newAgent.desc}</div>
+      </div>
+      <button class="open-agent-btn" onclick="createAndOpenAgent('${agId}', ${JSON.stringify(newAgent).replace(/'/g, "\\'")})">Ochish →</button>
+    </div>`;
+  }
+
+  div.innerHTML = `
+    <div class="msg-avatar">${avatar}</div>
+    <div class="msg-bubble">${content}</div>
+  `;
+
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function createAndOpenAgent(id, agentData) {
+  if (agents[id]) { switchAgent(id); return; }
+
+  agents[id] = {
+    id,
+    name: agentData.name,
+    icon: agentData.icon || '🤖',
+    desc: agentData.desc,
+    type: 'agent',
+    history: [],
+    systemPrompt: agentData.system || `Sen ${agentData.name} mutaxassisisan. Foydalanuvchiga ${agentData.desc} bo'yicha yordam ber.`
+  };
+
+  // Add to sidebar
+  const list = document.getElementById('agentsList');
+  const el = document.createElement('div');
+  el.className = 'agent-item';
+  el.id = 'agent-' + id;
+  el.onclick = () => switchAgent(id);
+  el.innerHTML = `
+    <div class="agent-icon custom">${agentData.icon || '🤖'}</div>
+    <div class="agent-info">
+      <div class="agent-name">${agentData.name}</div>
+      <div class="agent-desc">${agentData.desc}</div>
+    </div>
+    <span class="agent-badge badge-agent">AGENT</span>
+  `;
+  list.appendChild(el);
+
+  switchAgent(id);
+}
+
+function appendTyping() {
+  const container = document.getElementById('chatMessages');
+  const id = 'typing_' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.id = id;
+  div.innerHTML = `
+    <div class="msg-avatar">${agents[activeAgent].icon}</div>
+    <div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) {
+  document.getElementById(id)?.remove();
+}
+
+function formatText(text) {
   return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>')
-    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    .replace(/^/, '<p>').replace(/$/, '</p>');
 }
 
-/* ── WORLD ── */
-function addAgentToWorld(agent) {
-  if (AGENTS.length === 0) {
-    var emp = document.getElementById('worldEmpty');
-    emp.style.opacity = '0';
-    setTimeout(function() { emp.style.display = 'none'; }, 400);
-  }
-  var pos = POSITIONS[POS_IDX % POSITIONS.length];
-  POS_IDX++;
-  agent.wx = pos.x;
-  agent.wy = pos.y;
-  AGENTS.push(agent);
-
-  var card = document.createElement('div');
-  card.className = 'agent-card';
-  card.style.left = pos.x + 'px';
-  card.style.top = pos.y + 'px';
-  if (agent.color) card.style.borderColor = agent.color + '66';
-
-  var icon = agent.icon || '🤖';
-  var name = agent.name || 'Agent';
-  var desc = agent.description || '';
-
-  card.innerHTML =
-    '<span class="ac-icon">' + icon + '</span>' +
-    '<div class="ac-name">' + name + '</div>' +
-    '<div class="ac-type">' + desc + '</div>' +
-    '<div class="ac-live"><div class="ac-livdot"></div>Faol</div>' +
-    '<span class="ac-open">XONAGA KIRISH &rarr;</span>';
-
-  card.onclick = (function(a) {
-    return function() { openRoom(a); };
-  })(agent);
-
-  document.getElementById('world').appendChild(card);
-  showNotif('"' + name + '" imperiyaga qo\'shildi!');
-}
-
-function openRoom(agent) {
-  var key = 'ar_' + agent.id;
-  sessionStorage.setItem(key, JSON.stringify({
-    agent: agent,
-    apiKey: API_KEY,
-    model: API_MODEL
-  }));
-  var base = window.location.href.split('?')[0];
-  window.open(base + '?room=' + agent.id, '_blank');
-}
-
-/* ── KING CHAT ── */
-function kingGreet() {
-  addKingMsg('king',
-    'Assalomu alaykum. \n\nMen Qirol. Buyruq bering.\n\nMasalan:\n' +
-    '- "Kod yozish agenti yarat"\n' +
-    '- "Sport ustoz kerak"\n' +
-    '- "Ingliz tili muallimi"\n' +
-    '- "Matematika o\'qituvchisi"'
-  );
-}
-
-function addKingMsg(role, text) {
-  var box = document.getElementById('msgs');
-  var d = document.createElement('div');
-  d.className = 'msg ' + role;
-  d.innerHTML =
-    '<div class="msg-bubble">' + safeHtml(text) + '</div>' +
-    '<div class="msg-time">' + nowTime() + '</div>';
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
-  return d;
-}
-
-function attachAgentTag(agent) {
-  var box = document.getElementById('msgs');
-  var last = box.lastElementChild;
-  if (!last) return;
-  var bubble = last.querySelector('.msg-bubble');
-  if (!bubble) return;
-  var tag = document.createElement('div');
-  tag.className = 'agent-tag';
-  tag.innerHTML = (agent.icon || '🤖') + ' ' + agent.name + ' xonasiga kirish &rarr;';
-  tag.onclick = (function(a) { return function() { openRoom(a); }; })(agent);
-  bubble.appendChild(document.createElement('br'));
-  bubble.appendChild(tag);
-}
-
-function showKingTyping() {
-  var box = document.getElementById('msgs');
-  var d = document.createElement('div');
-  d.className = 'msg king'; d.id = 'ktyp';
-  d.innerHTML = '<div class="typing-box"><span></span><span></span><span></span></div>';
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
-}
-function hideKingTyping() {
-  var t = document.getElementById('ktyp');
-  if (t) t.remove();
-}
-
-function kingSend() {
-  if (KING_BUSY) return;
-  var ta = document.getElementById('ta');
-  var text = ta.value.trim();
-  if (!text) return;
-  ta.value = ''; ta.style.height = 'auto';
-  addKingMsg('user', text);
-  KING_HIST.push({ role: 'user', content: text });
-  KING_BUSY = true;
-  document.getElementById('sendBtn').disabled = true;
-  showKingTyping();
-
-  var agentList = AGENTS.map(function(a) { return (a.icon||'') + ' ' + a.name; }).join(', ') || 'hozircha yo\'q';
-
-  var sys =
-    'Sen "QIROL" — foydalanuvchining shaxsiy AI imperiya hukmdorisiz. O\'zbek tilida gapirasan.\n' +
-    'Qisqa, aniq, kuchli gapirasan.\n\n' +
-    'MAVJUD AGENTLAR: ' + agentList + '\n\n' +
-    'Agent yaratish kerak bo\'lsa, javobingga QO\'SH (boshqa hech narsa o\'zgarmaydi):\n\n' +
-    '<<<AGENT_START>>>\n' +
-    '{\n' +
-    '  "id": "a' + Date.now() + '",\n' +
-    '  "name": "Agent Nomi",\n' +
-    '  "icon": "🤖",\n' +
-    '  "color": "#c9a84c",\n' +
-    '  "type": "tur",\n' +
-    '  "description": "Bir jumla tavsif",\n' +
-    '  "systemPrompt": "Sen ... mutaxassisisiz. [batafsil ko\'rsatmalar]"\n' +
-    '}\n' +
-    '<<<AGENT_END>>>\n\n' +
-    'System prompt agentning asosi — batafsil yoz. Agent o\'sha xonada ishlaydi.\n' +
-    'Sport agenti uchun: kunlik mashq, motivatsiya, video topish yo\'riqnomasini yoz.\n' +
-    'Kod agenti uchun: kod yozish, debug, HTML preview ko\'rsatish yo\'riqnomasini yoz.';
-
-  var msgs = [{ role: 'system', content: sys }].concat(KING_HIST.slice(-10));
-
-  fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + API_KEY,
-      'HTTP-Referer': 'https://qirollik.app',
-      'X-Title': 'Qirollik'
-    },
-    body: JSON.stringify({ model: API_MODEL, max_tokens: 1500, messages: msgs })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    hideKingTyping();
-    if (data.error) {
-      addKingMsg('king', 'Xato: ' + data.error.message);
-    } else {
-      var reply = data.choices[0].message.content;
-      KING_HIST.push({ role: 'assistant', content: reply });
-
-      var m = reply.match(/<<<AGENT_START>>>([\s\S]*?)<<<AGENT_END>>>/);
-      var display = reply.replace(/<<<AGENT_START>>>[\s\S]*?<<<AGENT_END>>>/g, '').trim();
-
-      if (m) {
-        try {
-          var agentData = JSON.parse(m[1].trim());
-          addAgentToWorld(agentData);
-          addKingMsg('king', display || '"' + agentData.name + '" yaratildi.');
-          attachAgentTag(agentData);
-        } catch(e) {
-          addKingMsg('king', display || reply);
-        }
-      } else {
-        addKingMsg('king', display || reply);
-      }
-    }
-    KING_BUSY = false;
-    document.getElementById('sendBtn').disabled = false;
-  })
-  .catch(function(e) {
-    hideKingTyping();
-    addKingMsg('king', 'Ulanish xatosi. API kalitni tekshiring.');
-    console.error(e);
-    KING_BUSY = false;
-    document.getElementById('sendBtn').disabled = false;
-  });
-}
-
-/* ── AGENT ROOM ── */
-function isRoomMode() {
-  var p = new URLSearchParams(window.location.search);
-  var roomId = p.get('room');
-  if (!roomId) return false;
-
-  var stored = sessionStorage.getItem('ar_' + roomId);
-  if (!stored) {
-    document.body.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100vh;background:#07070d;color:#c9a84c;font-family:serif;font-size:1.1rem;text-align:center';
-    document.body.textContent = 'Agent topilmadi. Asosiy sahifaga qayting va qayta bosing.';
-    return true;
-  }
-
-  var d = JSON.parse(stored);
-  renderRoom(d.agent, d.apiKey, d.model);
-  return true;
-}
-
-function renderRoom(agent, key, model) {
-  var c = agent.color || '#c9a84c';
-  document.title = (agent.icon || '') + ' ' + (agent.name || 'Agent');
-
-  // Sahifani to'liq render qilamiz
-  document.getElementById('gate').style.display = 'none';
-  var app = document.getElementById('app');
-  app.style.display = 'flex';
-  app.style.flexDirection = 'column';
-
-  // Header qayta yozish
-  document.querySelector('.hdr').innerHTML =
-    '<div style="display:flex;align-items:center;gap:12px">' +
-      '<span style="font-size:1.5rem">' + (agent.icon || '🤖') + '</span>' +
-      '<div>' +
-        '<div style="font-family:Cinzel,serif;font-size:.95rem;color:' + c + ';letter-spacing:.1em">' + (agent.name || 'Agent') + '</div>' +
-        '<div style="font-size:.68rem;color:#5a5040;font-style:italic;margin-top:1px">' + (agent.description || '') + '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div style="display:flex;align-items:center;gap:8px;font-size:.7rem;color:#5a5040">' +
-      '<span style="width:6px;height:6px;border-radius:50%;background:#4ecb71;box-shadow:0 0 8px #4ecb71;display:inline-block;animation:pls 2s infinite"></span>' +
-      'AGENT XONASI' +
-    '</div>';
-
-  document.querySelector('.hdr').style.borderBottomColor = c + '55';
-
-  // Layout o'zgartiramiz
-  var layout = document.querySelector('.layout');
-  layout.innerHTML =
-    '<div id="leftPanel" style="flex:1;overflow-y:auto;padding:20px;border-right:1px solid rgba(255,255,255,.06)">' +
-      '<div style="text-align:center;padding:80px 20px;color:rgba(255,255,255,.12)">' +
-        '<div style="font-size:4rem;margin-bottom:14px">' + (agent.icon || '🤖') + '</div>' +
-        '<div style="font-family:Cinzel,serif;font-size:.85rem;letter-spacing:.15em;color:' + c + '44">AGENT TAYYOR</div>' +
-        '<div style="font-size:.78rem;margin-top:10px;font-style:italic">Chat orqali buyruq bering — natija shu yerda ko\'rinadi</div>' +
-      '</div>' +
-    '</div>' +
-    '<div style="width:360px;flex-shrink:0;display:flex;flex-direction:column;background:#0e0e18">' +
-      '<div id="roomMsgs" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px"></div>' +
-      '<div style="padding:12px;border-top:1px solid rgba(255,255,255,.06);background:#161624;flex-shrink:0">' +
-        '<div id="roomInputWrap" style="display:flex;gap:8px;align-items:flex-end;background:#1e1e30;border:1px solid rgba(201,168,76,.13);border-radius:10px;padding:7px 10px">' +
-          '<textarea id="roomTa" rows="1" placeholder="Buyruq bering..." style="flex:1;background:transparent;border:none;color:#ede8df;font-family:Crimson Pro,serif;font-size:.9rem;line-height:1.5;resize:none;outline:none;max-height:90px;min-height:22px"></textarea>' +
-          '<button id="roomBtn" onclick="roomSend()" style="width:32px;height:32px;border-radius:7px;flex-shrink:0;background:linear-gradient(135deg,' + c + ',#e8c97a);border:none;cursor:pointer;font-size:14px;color:#07070d;font-weight:700;display:flex;align-items:center;justify-content:center">&#8593;</button>' +
-        '</div>' +
-        '<div style="font-size:.63rem;color:#5a5040;text-align:center;margin-top:7px;font-style:italic">Enter — yuborish &nbsp;&#183;&nbsp; Shift+Enter — yangi qator</div>' +
-      '</div>' +
-    '</div>';
-
-  // Room state
-  window._R = { agent: agent, key: key, model: model, hist: [], busy: false };
-
-  var ta = document.getElementById('roomTa');
-  ta.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); roomSend(); }
-  });
-  ta.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 90) + 'px';
-  });
-
-  // Birinchi xabar
-  roomMsg('ai', 'Salom! Men ' + (agent.name || 'Agent') + '. Tayyor turaman — buyruq bering.');
-}
-
-function roomMsg(role, text) {
-  var box = document.getElementById('roomMsgs');
-  if (!box) return;
-  var d = document.createElement('div');
-  d.style.cssText = 'display:flex;flex-direction:column;gap:3px;animation:mi .26s ease both;align-items:' + (role === 'user' ? 'flex-end' : 'flex-start');
-  var bubbleStyle = role === 'user'
-    ? 'max-width:92%;padding:9px 13px;border-radius:10px;border-bottom-right-radius:2px;font-size:.84rem;line-height:1.65;background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.22)'
-    : 'max-width:92%;padding:9px 13px;border-radius:10px;border-bottom-left-radius:2px;font-size:.84rem;line-height:1.65;background:#17172a;border:1px solid rgba(255,255,255,.05)';
-  var safe = text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-    .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-size:.82em;font-family:monospace">$1</code>');
-  d.innerHTML =
-    '<div style="' + bubbleStyle + '">' + safe + '</div>' +
-    '<div style="font-size:.6rem;color:#5a5040;padding:0 4px">' + nowTime() + '</div>';
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
-}
-
-function roomTyping(show) {
-  var box = document.getElementById('roomMsgs');
-  if (!box) return;
-  if (show) {
-    var d = document.createElement('div');
-    d.id = 'rtyp';
-    d.style.cssText = 'display:flex;flex-direction:column;gap:3px;align-items:flex-start';
-    d.innerHTML = '<div style="display:flex;align-items:center;gap:4px;padding:9px 13px;background:#17172a;border-radius:10px;border-bottom-left-radius:2px;border:1px solid rgba(255,255,255,.05);width:fit-content"><span style="width:5px;height:5px;border-radius:50%;background:var(--gold,#c9a84c);animation:td 1.4s infinite;display:inline-block"></span><span style="width:5px;height:5px;border-radius:50%;background:var(--gold,#c9a84c);animation:td 1.4s .22s infinite;display:inline-block"></span><span style="width:5px;height:5px;border-radius:50%;background:var(--gold,#c9a84c);animation:td 1.4s .44s infinite;display:inline-block"></span></div>';
-    box.appendChild(d);
-    box.scrollTop = box.scrollHeight;
-  } else {
-    var t = document.getElementById('rtyp');
-    if (t) t.remove();
-  }
-}
-
-function roomRenderLeft(text) {
-  var panel = document.getElementById('leftPanel');
-  if (!panel) return;
-  var m = text.match(/```html([\s\S]*?)```/);
-  if (m) { panel.innerHTML = '<div style="padding:16px">' + m[1] + '</div>'; return; }
-  var m2 = text.match(/```render([\s\S]*?)```/);
-  if (m2) { panel.innerHTML = '<div style="padding:16px">' + m2[1] + '</div>'; }
-}
-
-function roomSend() {
-  if (!window._R || window._R.busy) return;
-  var ta = document.getElementById('roomTa');
-  var text = ta.value.trim();
-  if (!text) return;
-  ta.value = ''; ta.style.height = 'auto';
-  roomMsg('user', text);
-  window._R.hist.push({ role: 'user', content: text });
-  window._R.busy = true;
-  document.getElementById('roomBtn').disabled = true;
-  roomTyping(true);
-
-  var r = window._R;
-  var sys = r.agent.systemPrompt +
-    '\n\n=== KO\'RSATISH QOIDASI ===\n' +
-    'Agar foydalanuvchi biror narsani ko\'rsat, chiqar, preview desa — javobingga qo\'sh:\n' +
-    '```html\n' +
-    '<div style="padding:20px;font-family:sans-serif;color:#ede8df">\n' +
-    '  <!-- HTML kontent bu yerda -->\n' +
-    '</div>\n' +
-    '```\n' +
-    'Bu blok avtomatik chap panelda ko\'rinadi.\n' +
-    'YouTube video: <iframe width="100%" style="aspect-ratio:16/9;border-radius:10px;border:none" src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe>\n' +
-    'Kod preview: <pre style="background:#0a0a15;padding:14px;border-radius:8px;color:#a8d8a8;overflow-x:auto;font-family:monospace">KOD_BU_YERDA</pre>';
-
-  var messages = [{ role: 'system', content: sys }].concat(r.hist.slice(-14));
-
-  fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + r.key,
-      'HTTP-Referer': 'https://qirollik.app',
-      'X-Title': 'Qirollik Agent'
-    },
-    body: JSON.stringify({ model: r.model, max_tokens: 2000, messages: messages })
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
-    roomTyping(false);
-    if (data.error) {
-      roomMsg('ai', 'Xato: ' + data.error.message);
-    } else {
-      var reply = data.choices[0].message.content;
-      window._R.hist.push({ role: 'assistant', content: reply });
-      var display = reply.replace(/```(html|render)[\s\S]*?```/g, '[Panel yangilandi]').trim();
-      roomMsg('ai', display);
-      roomRenderLeft(reply);
-    }
-    window._R.busy = false;
-    document.getElementById('roomBtn').disabled = false;
-  })
-  .catch(function(e) {
-    roomTyping(false);
-    roomMsg('ai', 'Ulanish xatosi.');
-    console.error(e);
-    window._R.busy = false;
-    document.getElementById('roomBtn').disabled = false;
-  });
-}
-
-/* ── INIT ── */
-document.addEventListener('DOMContentLoaded', function() {
-  if (isRoomMode()) return;
-
-  var ta = document.getElementById('ta');
-  ta.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); kingSend(); }
-  });
-  ta.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 90) + 'px';
-  });
-  document.getElementById('keyInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') startEmpire();
-  });
-  var sk = sessionStorage.getItem('qk');
-  if (sk) {
-    document.getElementById('keyInput').value = sk;
-    var sm = sessionStorage.getItem('qm');
-    if (sm) document.getElementById('modelSel').value = sm;
-  }
+// Modal keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeApiModal();
+  if (e.key === 'Enter' && document.getElementById('apiModal').style.display !== 'none') saveApiKey();
 });
 </script>
 </body>
