@@ -535,8 +535,29 @@
   .msg-bubble p { margin-bottom: 8px; }
   .msg-bubble p:last-child { margin-bottom: 0; }
   .msg-bubble strong { color: var(--accent); }
-  .msg-bubble ul { padding-left: 16px; margin: 8px 0; }
+  .msg-bubble ul { padding-left: 20px; margin: 8px 0; }
   .msg-bubble li { margin-bottom: 4px; }
+  .msg-bubble pre {
+    background: var(--surface);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    margin: 8px 0;
+  }
+  .msg-bubble code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--surface);
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: var(--accent2);
+  }
+  .msg-bubble pre code {
+    background: none;
+    padding: 0;
+    color: var(--text);
+  }
 
   /* Scrollbar */
   .agents-list::-webkit-scrollbar { width: 3px; }
@@ -650,15 +671,15 @@ QOIDALAR:
 1. Foydalanuvchi biror sohada yordam so'raganda, darhol o'sha sohaga mos agent yaratishni taklif qil
 2. Agent yaratishda aniq nom, emoji va vazifa tavsifini berasan
 3. Agent yaratilgach, foydalanuvchiga agentga o'tishni taklif qilasan
-4. Foydalanuvchi boshqa qo'shimcha vazifa so'rasa, yangi agent yaratasanham
+4. Foydalanuvchi boshqa qo'shimcha vazifa so'rasa, yangi agent yaratasan.
 
 AGENT YARATISH FORMATI:
 Har doim agent taklif qilganda quyidagi JSON formatida yoz (boshqa matn bilan birga):
 [AGENT_CREATE: {"name":"Agent nomi","icon":"emoji","desc":"Qisqa tavsif","system":"Bu agent...ning mutaxassisidir. [batafsil vazifa]"}]
 
-MUHIM: Agent yaratganda DOIM bu JSON formatni ishlatginasan. Faqat bitta agent taklif qil.
+MUHIM: Agent yaratganda DOIM bu JSON formatni ishlatgin. Faqat bitta agent taklif qil.
 
-Tillar: Asosan o'zbek tilida javob ber, lekin foydalanuvchi qaysi tilda yozsa shu tilda javob ber.`
+Tillar: Asosan oʻzbek tilida javob ber, lekin foydalanuvchi qaysi tilda yozsa shu tilda javob ber.`
   }
 };
 
@@ -843,13 +864,14 @@ function appendMsg(role, text, animate, newAgent = null) {
 
   if (newAgent) {
     const agId = 'agent_' + Date.now();
+    const agentDataEscaped = btoa(unescape(encodeURIComponent(JSON.stringify(newAgent))));
     content += `<div class="agent-card">
       <div class="agent-card-icon">${newAgent.icon || '🤖'}</div>
       <div class="agent-card-info">
         <div class="agent-card-name">${newAgent.name}</div>
         <div class="agent-card-desc">${newAgent.desc}</div>
       </div>
-      <button class="open-agent-btn" onclick="createAndOpenAgent('${agId}', ${JSON.stringify(newAgent).replace(/'/g, "\\'")})">Ochish →</button>
+      <button class="open-agent-btn" onclick="createAndOpenAgent('${agId}', '${agentDataEscaped}', true)">Ochish →</button>
     </div>`;
   }
 
@@ -862,8 +884,12 @@ function appendMsg(role, text, animate, newAgent = null) {
   container.scrollTop = container.scrollHeight;
 }
 
-function createAndOpenAgent(id, agentData) {
+function createAndOpenAgent(id, agentData, isBase64 = false) {
   if (agents[id]) { switchAgent(id); return; }
+
+  if (isBase64) {
+    agentData = JSON.parse(decodeURIComponent(escape(atob(agentData))));
+  }
 
   agents[id] = {
     id,
@@ -914,15 +940,44 @@ function removeTyping(id) {
 }
 
 function formatText(text) {
-  return text
+  let formatted = text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>')
-    .replace(/^/, '<p>').replace(/$/, '</p>');
+    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+  const lines = formatted.split('\n');
+  let inList = false;
+  let result = '';
+
+  lines.forEach(line => {
+    const listMatch = line.match(/^(\s*)[-*+]\s+(.*)/);
+    if (listMatch) {
+      if (!inList) {
+        result += '<ul>';
+        inList = true;
+      }
+      result += `<li>${listMatch[2]}</li>`;
+    } else {
+      if (inList) {
+        result += '</ul>';
+        inList = false;
+      }
+      if (line.trim() === '') {
+        result += '<br>';
+      } else if (!line.startsWith('<pre') && !line.startsWith('</pre') && !line.startsWith('<li>')) {
+        result += `<p>${line}</p>`;
+      } else {
+        result += line;
+      }
+    }
+  });
+
+  if (inList) result += '</ul>';
+  return result;
 }
 
 // Modal keyboard
